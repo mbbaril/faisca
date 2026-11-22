@@ -107,6 +107,9 @@ ul.log time{font:10px/1.9 var(--mono);color:var(--faint)}
 .notice{margin-top:30px;padding:18px 0;border-block:1px solid #bcc4ae;display:grid;grid-template-columns:155px 1fr;gap:24px;align-items:start}
 .notice>span{font:9px/1.8 var(--mono);color:#9b3d16;letter-spacing:1px}
 .notice p{font-size:13px;line-height:1.8;margin:0;color:#3a4430}
+.notice a,.stories p a{text-decoration:underline;text-underline-offset:3px}
+.notice.plain{margin-top:0;border-top:0}
+.notice.plain>span{color:#545e46}
 .cards{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin-top:30px}
 .card{padding:28px;border:1px solid #aab69a;background:#d6ddca;min-width:0}
 .card .num{color:#5d694e}
