@@ -1,0 +1,115 @@
+<!doctype html>
+<!-- SPDX-License-Identifier: GPL-3.0-only  Copyright (C) 2026 Mario Baril -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="FAÍSCA: the controls, the sections, the effects and the MIDI map on one page, to print.">
+<meta name="theme-color" content="#000000">
+<title>FAÍSCA Cheat Sheet</title>
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="site.css">
+<style>
+.sheet{width:min(1180px,calc(100% - 64px));margin:28px auto 56px;background:var(--paper);color:var(--pink);border-radius:3px;padding:34px clamp(20px,4vw,56px) 30px;color-scheme:light}
+.sheet-head{display:flex;justify-content:space-between;align-items:end;gap:16px;flex-wrap:wrap;border-bottom:1px solid #c6ceba;padding-bottom:14px;margin-bottom:20px}
+.sheet h1{font:700 44px/1 var(--display);text-transform:uppercase;letter-spacing:0;margin:0;color:#182310}
+.sub{font:10px/1.6 var(--mono);letter-spacing:1px;color:#677354;text-transform:uppercase;margin:6px 0 0}
+.print{font:10px/1 var(--mono);letter-spacing:1px;color:#182310;background:none;border:1px solid #9daa85;padding:10px 14px;cursor:pointer}
+.print:hover{border-color:#182310}
+.cols{columns:3 300px;column-gap:28px}
+.cols section{break-inside:avoid;margin:0 0 16px}
+.cols h2{font:10px/1 var(--mono);letter-spacing:1.2px;color:#667a46;margin:0 0 6px;border-bottom:1px solid #bcc7ab;padding-bottom:6px;text-transform:uppercase}
+.cols table{width:100%;border-collapse:collapse;font:12px/1.45 var(--mono)}
+.cols td{padding:3px 8px 3px 0;vertical-align:top;color:#33402a}
+.cols td:first-child{font:700 15px/1.25 var(--display);letter-spacing:.4px;white-space:nowrap;width:1%;color:#182310}
+.note{font:9px/1.7 var(--mono);color:#677354;margin:10px 0 0}
+@media(max-width:680px){.sheet{width:calc(100% - 24px);padding:20px 14px}.sheet h1{font-size:34px}.cols td:first-child{white-space:normal}}
+@media print{@page{size:A4 landscape;margin:9mm}html,body{background:#fff!important;color:#000}.reading-head,.footer,.print,.skip{display:none!important}
+  .sheet{width:100%;margin:0;padding:0;background:#fff}.sheet h1{font-size:18pt}.cols{columns:3;column-gap:6mm}.cols table{font-size:7.6pt}.cols td:first-child{font-size:9pt}.cols section{margin-bottom:6px}}
+</style>
+</head>
+<body>
+<header class="reading-head"><div class="head-inner">
+  <a class="reading-brand" href="index.html">FAÍSCA<small><span data-l="en">CHEAT SHEET · BY RUÍDO</span><span data-l="pt">FOLHA DE CONSULTA · POR RUÍDO</span></small></a>
+  <nav aria-label="Site"><a href="index.html"><span data-l="en">Project</span><span data-l="pt">Projeto</span></a><a href="play.html"><span data-l="en">Play</span><span data-l="pt">Tocar</span></a><a href="manual.html"><span data-l="en">Manual</span><span data-l="pt">Manual</span></a><a href="theory.html"><span data-l="en">Theory</span><span data-l="pt">Teoria</span></a><a href="cheatsheet.html" aria-current="page"><span data-l="en">Cheat sheet</span><span data-l="pt">Folha de consulta</span></a></nav>
+  <div class="lang" role="group" aria-label="Language"><button type="button" id="en">EN</button><button type="button" id="pt">PT</button></div>
+</div></header>
+<main class="sheet" id="content">
+<div class="sheet-head"><div><h1>FAÍSCA</h1><p class="sub"><span data-l="en">Cheat sheet · the controls, the sections, the effects, MIDI</span><span data-l="pt">Folha de consulta · os controles, as seções, os efeitos, MIDI</span></p></div>
+<button type="button" class="print" id="print"><span data-l="en">PRINT</span><span data-l="pt">IMPRIMIR</span></button></div>
+<div class="cols">
+<section><h2><span data-l="en">ALWAYS</span><span data-l="pt">SEMPRE</span></h2><table>
+<tr><td>CROSS</td><td data-l="en">all the sends between the loops</td><td data-l="pt">todos os envios entre os laços</td></tr>
+<tr><td>SCREAM</td><td data-l="en">the output bends the loops' delays</td><td data-l="pt">a saída curva os atrasos dos laços</td></tr>
+<tr><td>GAIN</td><td data-l="en">how much each loop gives back; past the middle, they sing</td><td data-l="pt">quanto cada laço devolve; depois do meio, cantam</td></tr>
+<tr><td>LEVEL</td><td data-l="en">the output; a limiter is always on</td><td data-l="pt">a saída; o limitador fica sempre ligado</td></tr>
+</table></section>
+
+<section><h2><span data-l="en">SECTIONS · K1 K2 K3 K4</span><span data-l="pt">SEÇÕES · K1 K2 K3 K4</span></h2><table>
+<tr><td>LOOP</td><td>MID FOCUS DRIVE HISS</td></tr>
+<tr><td>CHAN</td><td>GAIN PITCH MID LEVEL <span data-l="en">(again: next loop)</span><span data-l="pt">(de novo: próximo laço)</span></td></tr>
+<tr><td>MATRIX</td><td>FROM 1 FROM 2 FROM 3 FROM 4 <span data-l="en">(again: next)</span><span data-l="pt">(de novo: próximo)</span></td></tr>
+<tr><td>SHAPE</td><td>TOPOLOGY PARTIALS</td></tr>
+<tr><td>FX</td><td><span data-l="en">one effect (again: next; held + white 1–12: that one)</span><span data-l="pt">um efeito (de novo: próximo; seguro + branca 1–12: aquele)</span></td></tr>
+<tr><td>DELAY</td><td>TIME FEEDBACK TONE MIX</td></tr>
+<tr><td>REVERB</td><td>SIZE DAMP WIDTH MIX</td></tr>
+<tr><td>MOD</td><td>LFO 1 · LFO 2 · RANDOM · SMOOTH</td></tr>
+</table></section>
+
+<section><h2><span data-l="en">THE CHAIN, IN ORDER · THE 4TH KNOB IS MIX</span><span data-l="pt">A CADEIA, EM ORDEM · O 4º KNOB É O MIX</span></h2><table>
+<tr><td>1 FUZZ</td><td>GAIN TONE BIAS</td></tr>
+<tr><td>2 BLAST</td><td>GAIN TONE EMPHASIS</td></tr>
+<tr><td>3 FOLD</td><td>DEPTH BIAS SOFT</td></tr>
+<tr><td>4 WRAP</td><td>DEPTH BIAS SMOOTH</td></tr>
+<tr><td>5 RECTIFY</td><td>HALF BIAS TONE</td></tr>
+<tr><td>6 DIVIDE</td><td>OCTAVE WIDTH TONE</td></tr>
+<tr><td>7 RING</td><td>CARRIER FREQ DC</td></tr>
+<tr><td>8 STARVE</td><td>SAG GATE RECOVER</td></tr>
+<tr><td>9 SHIFT</td><td>HZ SPREAD FEEDBACK</td></tr>
+<tr><td>10 ECHO</td><td>TIME FEEDBACK WOW</td></tr>
+<tr><td>11 PUMP</td><td>DEPTH ATTACK RELEASE</td></tr>
+<tr><td>12 SWEEP</td><td>RANGE BASE RESO</td></tr>
+</table></section>
+
+<section><h2><span data-l="en">HOLD</span><span data-l="pt">SEGURAR</span></h2><table>
+<tr><td>MEMORY</td><td><span data-l="en">+ white 1–16: recall</span><span data-l="pt">+ branca 1–16: chamar</span></td></tr>
+<tr><td>STORE</td><td><span data-l="en">+ white 1–16: keep · tap: SETUP</span><span data-l="pt">+ branca 1–16: guardar · toque: SETUP</span></td></tr>
+<tr><td>RIBBON</td><td><span data-l="en">the keys set the last knob touched</span><span data-l="pt">as teclas ajustam o último knob mexido</span></td></tr>
+<tr><td>MEM+RIBBON</td><td><span data-l="en">+ white: MORPH target; then RIBBON morphs</span><span data-l="pt">+ branca: destino do MORPH; depois o RIBBON faz o morph</span></td></tr>
+<tr><td>LFO</td><td><span data-l="en">+ turn: depth · + white 1–4: source · 2 taps: clear</span><span data-l="pt">+ girar: profundidade · + branca 1–4: fonte · 2 toques: limpa</span></td></tr>
+<tr><td>MOTION</td><td><span data-l="en">record knob gestures (≤ 8 s) · tap: clear</span><span data-l="pt">grava gestos dos knobs (≤ 8 s) · toque: limpa</span></td></tr>
+<tr><td>DRONE</td><td><span data-l="en">latch the loops open</span><span data-l="pt">trava os laços abertos</span></td></tr>
+</table></section>
+
+<section><h2>PADS</h2><table>
+<tr><td><span data-l="en">WHITE</span><span data-l="pt">BRANCOS</span></td><td>KICK 1 2 3 4 · 1 2 3 4 · 1+2 3+4 1+3 2+4 · ALL ×4 <span data-l="en">(dark → bright)</span><span data-l="pt">(escuro → claro)</span></td></tr>
+<tr><td><span data-l="en">BLACK</span><span data-l="pt">PRETOS</span></td><td>CUT OPEN RETURN · CHOP 32 16 8 4 · SCATTER 4 8 16 32</td></tr>
+</table></section>
+
+<section><h2>MIDI</h2><table>
+<tr><td>NOTE 53–79</td><td><span data-l="en">pads</span><span data-l="pt">pads</span></td></tr>
+<tr><td>NOTE 36–49</td><td>MOTION RIBBON LOOP CHAN MATRIX SHAPE MEMORY LFO FX DELAY REVERB MOD DRONE STORE</td></tr>
+<tr><td>CC 20–23</td><td>K1–K4</td></tr>
+<tr><td>CC 24 25 26</td><td>CROSS SCREAM GAIN</td></tr>
+<tr><td>CC 7</td><td>LEVEL</td></tr>
+</table></section>
+
+<section><h2><span data-l="en">ON THE UNIT</span><span data-l="pt">NO APARELHO</span></h2><table>
+<tr><td>SELECT ALGORITHM PRESETS</td><td>CROSS SCREAM GAIN</td></tr>
+<tr><td>FX SCL ENV LFO</td><td>LOOP CHAN MATRIX SHAPE</td></tr>
+<tr><td>HOME SAVE ARP SEQ</td><td>FX DELAY REVERB MOD</td></tr>
+<tr><td>OCT− OCT+ EDIT GLO</td><td>MOTION RIBBON MEMORY LFO</td></tr>
+<tr><td>PLAY REC</td><td>DRONE STORE</td></tr>
+</table></section>
+</div>
+<p class="note"><span data-l="en">FM-1 is a trademark of its manufacturer. FAÍSCA (GPL-3.0) is not affiliated with it or endorsed by it.</span><span data-l="pt">FM-1 é marca do seu fabricante. O FAÍSCA (GPL-3.0) não é afiliado a ele nem endossado por ele.</span></p>
+</main>
+<footer class="footer reading-foot">
+  <a href="https://usina.ruido.art.br" class="brand">ruído<span>INSTRUMENTOS</span></a>
+  <p><span data-l="en">FAÍSCA / A NOISEBOX FOR THE HANDS.</span><span data-l="pt">FAÍSCA / UMA CAIXA DE RUÍDO PARA AS MÃOS.</span></p>
+  <span><a href="legal.html">LEGAL</a> · <a href="recovery.html"><span data-l="en">RECOVERY</span><span data-l="pt">RECUPERAÇÃO</span></a><br>FAÍSCA / RUÍDO · GPL-3.0</span>
+</footer>
+<script>document.getElementById("print").onclick=()=>print();</script>
+<script src="site.js"></script>
+</body>
+</html>
