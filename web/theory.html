@@ -1,0 +1,464 @@
+<!doctype html>
+<!-- SPDX-License-Identifier: GPL-3.0-only  Copyright (C) 2026 Mario Baril -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#000000">
+<meta name="description" content="FAÍSCA: the theory of a noisebox made of four coupled feedback loops, with a fixed chain of nonlinear effects inside every loop.">
+<title>FAÍSCA Theory</title>
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="site.css">
+</head>
+<body>
+<a class="skip" href="#content"><span data-l="en">Skip to the content</span><span data-l="pt">Ir para o conteúdo</span></a>
+<header class="reading-head"><div class="head-inner">
+  <a class="reading-brand" href="index.html">FAÍSCA<small><span data-l="en">THEORY · BY RUÍDO</span><span data-l="pt">TEORIA · POR RUÍDO</span></small></a>
+  <nav aria-label="Site"><a href="index.html"><span data-l="en">Project</span><span data-l="pt">Projeto</span></a><a href="play.html"><span data-l="en">Play</span><span data-l="pt">Tocar</span></a><a href="manual.html"><span data-l="en">Manual</span><span data-l="pt">Manual</span></a><a href="theory.html" aria-current="page"><span data-l="en">Theory</span><span data-l="pt">Teoria</span></a><a href="cheatsheet.html"><span data-l="en">Cheat sheet</span><span data-l="pt">Folha de consulta</span></a></nav>
+  <div class="lang" role="group" aria-label="Language"><button type="button" id="en">EN</button><button type="button" id="pt">PT</button></div>
+</div></header>
+<div class="doc-layout">
+<aside class="chapter-list" aria-label="Chapters"><p class="toc-label"><span data-l="en">Chapters</span><span data-l="pt">Capítulos</span></p><nav class="toc" data-toc></nav></aside>
+<main class="doc-content" id="content">
+<div class="doc-meta"><span>FAÍSCA / <span data-l="en">THEORY</span><span data-l="pt">TEORIA</span></span><span data-l="en">Emulator 22 Nov 2026 · device firmware not released</span><span data-l="pt">Emulador 22 nov 2026 · firmware do aparelho não lançado</span></div>
+<details class="mobile-index"><summary><span data-l="en">Chapters</span><span data-l="pt">Capítulos</span></summary><nav class="toc" data-toc></nav></details>
+<div class="article">
+<!-- the two figures, drawn once and shown in both languages -->
+<template id="fig-loop">
+<svg viewBox="0 0 700 162" role="img" aria-label="One loop: input sum, preamp, DC block, band-pass, the fixed chain, the delay, and back">
+  <g font-family="ui-monospace,Consolas,monospace" font-size="12" fill="#dfe3e1" text-anchor="middle">
+    <g stroke="#4b5250" fill="#111413" stroke-width="1.5">
+      <circle cx="44" cy="62" r="16"/>
+      <rect x="84" y="40" width="84" height="44" rx="4"/><rect x="186" y="40" width="84" height="44" rx="4"/>
+      <rect x="288" y="40" width="96" height="44" rx="4"/><rect x="402" y="40" width="148" height="44" rx="4"/>
+      <rect x="568" y="40" width="104" height="44" rx="4"/>
+    </g>
+    <text x="44" y="67" font-size="15">+</text>
+    <text x="126" y="60">PREAMP</text><text x="126" y="75" fill="#8f9794" font-size="11">DRIVE</text>
+    <text x="228" y="67">DC BLOCK</text>
+    <text x="336" y="60">BAND-PASS</text><text x="336" y="75" fill="#8f9794" font-size="11">MID FOCUS</text>
+    <text x="476" y="60">THE CHAIN</text><text x="476" y="75" fill="#8f9794" font-size="11">FUZZ … SWEEP</text>
+    <text x="620" y="60">DELAY τ</text><text x="620" y="75" fill="#8f9794" font-size="11">PITCH SCREAM</text>
+    <g stroke="#dfe3e1" stroke-width="1.5" fill="none">
+      <path d="M60 62H84M168 62H186M270 62H288M384 62H402M550 62H568"/>
+      <path d="M672 62H690V150H44V78"/>
+    </g>
+    <text x="367" y="142" fill="#dfe3e1">× GAIN</text>
+  </g>
+</svg>
+</template>
+<template id="fig-net">
+<svg viewBox="0 0 700 260" role="img" aria-label="Four lamps in a circle, joined by signed sends">
+  <g fill="none" stroke-width="2.5">
+    <path d="M270 70 Q350 40 430 70" stroke="#c2f000"/><path d="M450 90 Q480 130 450 170" stroke="#c2f000"/>
+    <path d="M430 190 Q350 220 270 190" stroke="#5abeff"/><path d="M250 170 Q220 130 250 90" stroke="#c2f000"/>
+    <path d="M270 85 L430 175" stroke="#3a3a37" stroke-width="1.5"/>
+  </g>
+  <g stroke-width="2.5">
+    <circle cx="250" cy="70" r="24" fill="#c2f000" fill-opacity=".85" stroke="#c2f000"/>
+    <circle cx="450" cy="70" r="24" fill="#c2f000" fill-opacity=".45" stroke="#c2f000"/>
+    <circle cx="450" cy="190" r="24" fill="#0c0c0c" stroke="#4d4d49"/>
+    <circle cx="250" cy="190" r="24" fill="#c2f000" fill-opacity=".25" stroke="#c2f000"/>
+    <circle cx="450" cy="70" r="31" fill="none" stroke="#ff5b3a" stroke-width="3" stroke-opacity=".7"/>
+  </g>
+  <g font-family="ui-monospace,Consolas,monospace" font-size="12" fill="#8f9794" text-anchor="middle">
+    <text x="250" y="30">1</text><text x="450" y="30">2</text><text x="450" y="240">3</text><text x="250" y="240">4</text>
+  </g>
+</svg>
+</template>
+
+<!-- ================= EN ================= -->
+<div data-l="en">
+<h1>Four loops that sing</h1>
+<p class="lede">There is no oscillator in this instrument. Every sound it makes is the instability of a small network of
+feedback loops, held at the edge where it starts to ring.</p>
+
+<h2><small>01</small>The loop</h2>
+<p>Each of the four channels is a closed circuit: a saturating preamp, a DC blocker, a band-pass filter, a fixed chain
+of twelve effects, a short delay, and the way back to the start. Its output is written into the delay line and read
+again one period later.</p>
+<figure data-fig="fig-loop"><figcaption>One loop. Everything on the way back is multiplied by GAIN; at the input it meets
+the other three loops through the matrix (× CROSS), a strike (KICK) and a floor of noise (HISS).</figcaption></figure>
+<p>A loop like this oscillates where two conditions meet, the <span class="term">Barkhausen criterion</span>: the gain
+around the loop reaches one, and the phase around the loop is a whole number of turns.</p>
+<div class="eq">|G · B(e<sup>jω</sup>)| ≥ 1  and  ω τ + ∠B(e<sup>jω</sup>) = 2π k</div>
+<p>The delay τ offers a comb of candidate frequencies, k/τ. The band-pass B, at MID with its width set by FOCUS,
+chooses which of them get a gain of one or more. Below unity the loop is a resonator: struck, it rings and decays, as
+in the Karplus–Strong plucked string and its extensions by Jaffe and Smith. Above unity it cannot help sounding: a
+whisper of noise is enough to start it, and it grows until the preamp's saturation pulls the effective gain back down
+to exactly one. That equilibrium, a <span class="term">limit cycle</span>, is the sustained tone. The saturation is not
+an effect added to the sound; it is what keeps the loop alive without exploding.</p>
+<p>Each channel's delay is tuned to a partial of MID, from 20 Hz to 10 kHz. In HARMONIC the four loops sit on 1, 2, 3
+and 4 times MID; other lists are inharmonic on purpose: BAR uses the modes of a free bar (1, 2.756, 5.404, 8.933),
+BELL a minor-third cluster. When a period does not fit the line of 2048 samples, the loop goes up an octave, as a real
+circuit would settle on its nearest possible mode.</p>
+
+<h2><small>02</small>The network</h2>
+<p>The four loops are joined by a 4 × 4 matrix of sends: each loop's input receives the others' outputs, weighted and
+signed. Linear networks of delays coupled by a matrix are the classic structure of artificial reverberation (Stautner
+and Puckette; Jot and Chaigne), where the matrix is kept lossless so that the network decays smoothly. Here the matrix
+is deliberately allowed past unity, and every node saturates. The result is a set of
+<span class="term">coupled nonlinear oscillators</span>: they beat, pull each other into lock, split into alternating
+regimes, or fall into chaos when the coupling is strong.</p>
+<figure data-fig="fig-net"><figcaption>The screen. A lamp's light is its loop's level as heard; the red ring is how deep
+its preamp sits in the knee; a line is a send, lime when positive, blue when it inverts, as bright as what passes on
+it.</figcaption></figure>
+<p>The topologies are starting points for the matrix: RING (each loop feeds the next), PAIRS, CHAIN (open, nothing
+returns), STAR, ALL, and TWIST, a ring whose polarity flips at every other step so the energy circulates in
+counter-phase. Every send can also be set by hand in the MATRIX section, one row at a time. The diagonal of the matrix
+is each loop's own gain. CROSS scales all the sends at once.</p>
+
+<h2><small>03</small>The preamp and DRIVE</h2>
+<p>The preamp has a small-signal gain of one, so GAIN keeps its meaning: one is the edge. Its curve runs from a
+hyperbolic tangent (a soft knee) toward a hard clip as DRIVE rises. A normalised saturator in a self-oscillating loop
+has a property that makes a naive drive control inert: the loop settles at whatever amplitude brings its effective gain
+back to one, so scaling the input only moves the operating point. The distortion of a singing loop is set by how far it
+is above unity, not by the preamp's input level. DRIVE therefore does two things: it hardens the knee, and it
+multiplies the excess of loop gain above one. Below unity, where the loop is only struck, it shapes the knee alone.</p>
+
+<h2><small>04</small>SCREAM: the loop bending its own time</h2>
+<p>Reading a delay line at a moving position is phase modulation: the read head's speed is a change of pitch, as in
+vibrato, chorus and flanging (Disch and Zölzer). SCREAM moves every read position by the network's own output:</p>
+<div class="eq">τ<sub>i</sub>(t) = τ<sub>i</sub> · 2<sup>3 s² y(t)</sup></div>
+<p>where s is the knob and y the mean of the four loops' outputs. The signal now feeds back twice: as a sound into the
+loop, and as a modulation of the loop's own period. This self-modulation is the time-domain relative of feedback FM
+(Chowning's modulation index, here driven by the carrier itself). At low settings it adds sidebands and a rough edge;
+at high settings the four periods chase each other and the network screams.</p>
+
+<h2><small>05</small>The fixed chain</h2>
+<p>Between the band-pass and the delay, every loop passes through the same twelve effects, always in the same order.
+Each has four knobs, and the fourth is a MIX between the signal before and after it; at zero the stage is skipped, so
+the chain with every MIX at zero is the plain loop. A fixed order is a choice for the hands: a sound is described by
+positions only, never by a routing, and the same knob is always in the same place.</p>
+<p>A processor outside a loop acts once. Inside a loop, its output passes again and again through the same curve, the
+filter and the saturation, so the timbre is not a static waveshape but an orbit of a nonlinear map. That is why a small
+turn can switch the loop between regimes, from a steady tone to a period-doubled one, to a beating pair, to noise.</p>
+<h3>Saturation: FUZZ and BLAST</h3>
+<p>FUZZ is two saturating stages, the second one asymmetric, as two mismatched diodes are; the asymmetry and BIAS add
+even harmonics, and a DC blocker after it keeps the loop centred. BLAST is a hard clip from rail to rail, preceded by a
+first-order pre-emphasis (EMPHASIS) that lifts the highs before they are clipped, and followed by a low-pass (TONE).
+Inside a loop above unity, both work against the preamp: the stronger saturation lowers the amplitude at which the
+loop settles and raises the density of harmonics that return.</p>
+<h3>Folding: FOLD and WRAP</h3>
+<p>FOLD is a triangle wavefolder: past the edge, the wave is reflected back into range, as in the analog folders
+analysed by Esqueda, Pöntynen, Parker and Bilbao. Each additional fold adds a pair of turning points, so the spectrum
+grows with DEPTH in a way that clipping cannot produce. WRAP sends a peak that passes the edge to the opposite side: a
+modular, sawtooth-like discontinuity, brighter and harsher. SOFT and SMOOTH are a gentle low-pass after each, to tame
+the aliasing such sharp corners create.</p>
+<h3>Level and polarity: RECTIFY and DIVIDE</h3>
+<p>RECTIFY takes the absolute value (full wave), which doubles the fundamental, or keeps one half (half wave); a
+threshold (BIAS) and a tracked offset remove the DC that rectification creates. DIVIDE is a pair of flip-flops that
+toggle on the rising zero crossings, giving square waves one and two octaves below, scaled by the loop's own envelope.
+Fed back, a subharmonic offers the loop a period it can lock onto, and the loop drops an octave or splits.</p>
+<h3>Multiplication: RING</h3>
+<p>RING multiplies the loop by a carrier: either its neighbour loop or a sine of its own (FREQ). The product holds only
+sum and difference frequencies (Parker models the diode-based circuit); against the neighbour it is a second, nonlinear
+coupling between the loops, on top of the matrix. DC adds an offset to the carrier, turning ring modulation toward
+amplitude modulation, where the original is heard again.</p>
+<h3>Supply: STARVE</h3>
+<p>STARVE imitates a circuit on a failing supply. An envelope of the loop's level lowers the ceiling of the stage (SAG),
+and a dead zone (GATE) removes signals below a threshold, as crossover distortion does. RECOVER is how fast the supply
+comes back. In a loop the result breathes and sputters: loud passages choke, quiet ones die and restart.</p>
+<h3>Spectrum: SHIFT</h3>
+<p>SHIFT is a frequency shifter: the signal is turned into an analytic signal by a pair of all-pass chains whose
+outputs differ by 90° across the audio band, then multiplied by a turning phasor, which moves every component by the
+same number of hertz, a single-sideband modulation (Bode). Harmonic relations are broken. Inside a loop the shift is
+added again on every pass, so a component climbs or falls by HZ each period until it leaves the band: the endless
+glissandi of frequency-shifted feedback. SPREAD sets each loop a little apart; FEEDBACK is a second, local loop around
+the shifter.</p>
+<h3>Time: ECHO</h3>
+<p>ECHO is a short delay, 2 to 27 ms, inside each loop, with its own feedback, a slightly different time in each loop,
+and a slow modulation (WOW). It adds a second comb inside the first, whose teeth beat against the loop's own period.</p>
+<h3>Dynamics: PUMP</h3>
+<p>PUMP is a feed-forward compressor inside the loop (Giannoulis, Massberg and Reiss give the general design): its
+envelope follows the level with ATTACK and RELEASE, and the gain falls as the level rises. In a loop above unity this
+fights the growth: the loop swells, is pushed down, swells again, a relaxation oscillation whose rhythm is set by
+RELEASE.</p>
+<h3>Filter: SWEEP</h3>
+<p>SWEEP is a resonant band-pass (a state-variable filter in the topology-preserving form described by Zavalishin)
+whose centre is moved up from BASE by the loop's own envelope, with RANGE setting how far. It is an envelope filter,
+and in a loop it closes a third feedback path: the louder the loop, the higher the band, which changes what returns.</p>
+
+<h2><small>06</small>After the network: DELAY and REVERB</h2>
+<p>Loops 1 and 3 are summed to the left, 2 and 4 to the right, and pass through the output gate. DELAY is a ping-pong
+delay of 10 to 120 ms: each side's repeats are fed into the other through a low-pass (TONE), so the echoes alternate
+and darken. REVERB is a feedback delay network of four lines (601, 743, 919 and 1097 samples, mutually prime so their
+echoes do not coincide), mixed by a 4 × 4 Hadamard matrix, which is orthogonal and therefore lossless, with a gain
+below one (SIZE) and a low-pass in each line (DAMP), as in Jot and Chaigne and in Schroeder's first designs. WIDTH
+spreads the outputs between the two sides. Because both come after the gate, a CUT leaves their tails ringing.</p>
+
+<h2><small>07</small>Touch</h2>
+<p>The keys are pads. A white pad is a <span class="term">KICK</span>: a short burst of coloured noise injected into one,
+two or all loops, from dark and long on the left to bright and short on the right. Holding a pad also keeps the loops'
+return path open; releasing it closes the return over 60 ms, so a loop above unity sings only while it is held, and a
+loop below unity rings out. DRONE latches the return open.</p>
+<p>The black pads are gates. CUT closes the output, OPEN holds the return open without a strike, RETURN cuts the way
+back so the loop dies and is reborn when released. CHOP cuts the output in the network's own rhythm: it counts the
+rising zero crossings of the output and flips every 32, 16, 8 or 4, so the rhythm is the pitch, and it changes as the
+sound changes. SCATTER cuts at random intervals, around 4 to 32 per second. Every gate ramps in 0.5 ms, short enough to
+sound dry, long enough not to click.</p>
+
+<h2><small>08</small>Modulation, motion and morph</h2>
+<p>Four sources can move any knob: two LFOs (a triangle and a square with softened edges, 0.05 to 20 Hz), a RANDOM that
+picks a new value at its rate and glides to it as much as SMOOTH allows, and FOLLOW, the network's own output level.
+FOLLOW is one more feedback path, slower than the audio: the louder the network, the further the knob moves, which
+changes how loud the network is. A sound holds up to eight such assignments, each with a signed depth.</p>
+<p>MOTION records the knobs' positions while it is held, 40 points per lane over the length of the hold (up to 8 s),
+and plays them back as a loop. MORPH treats a sound as a vector of positions and moves linearly from the current one to
+a stored one; the lists that cannot be interpolated (topology, partials, the modulations) change at the midpoint.</p>
+
+<h2><small>09</small>Controls that spread over their travel</h2>
+<p>A feedback network concentrates its interesting behaviour in narrow regions: GAIN changes almost nothing until it
+nears one, then everything at once. A linear knob would waste most of its turn. Each knob, the effects' knobs
+included, is therefore mapped through a 17-point curve built from measurement: the knob is stepped across its range
+on reference sounds, the audible change between neighbouring steps is measured as a spectral distance, and the curve is
+the inverse of the accumulated change, so that equal turns become equal steps to the ear. GAIN keeps a wide region
+around unity, where the loop passes from struck to singing.</p>
+<p>The keyboard can also act as a ribbon: with RIBBON held, the 27 keys are 27 positions of the last knob touched, so a
+jump across the whole travel is a single touch, and a slide is a sweep.</p>
+
+<h2><small>10</small>The screen tells the truth</h2>
+<p>Nothing on the screen is drawn from a formula about what the sound should be. A lamp's light is the RMS of its loop
+as it reaches the output (so a gated or muted loop goes dark); its red ring measures how much the preamp compresses;
+each line's brightness is the RMS of what passes on that send. When a control is touched, its name and its value as
+the sound has it (hertz, semitones, decibels, the real loop gain) are written large for a moment, then the lamps
+return.</p>
+
+<h2><small>11</small>Lineage</h2>
+<p>The closest musical ancestor is the no-input mixing board: a mixer whose outputs are patched back into its inputs,
+played on its equalisers and auxiliary sends, a practice that grew in the Japanese and European improvised and noise
+scenes from the late 1990s. FAÍSCA keeps its anatomy (preamps, equalisers, auxiliary sends between channels, a floor of
+hiss that starts everything) and makes it small, repeatable and playable with one hand on the pads. The broader
+framework is the analysis of feedback as a musical system, in which the performer steers an unstable process rather
+than triggering sounds (Sanfilippo and Valle), the ecosystemic view of signal processing, where the sound is the
+interface (Di Scipio), and the long practice of microphone and loudspeaker feedback as an instrument (van Eck).</p>
+
+<h2><small>12</small>Implementation</h2>
+<p>One small C core, with no library and no function from a math library, runs on the instrument and in the browser.
+The browser version is that same core compiled to WebAssembly and run in the audio thread at 44.1 kHz; the screen is
+the core's own 240 × 240 frame, drawn in bands of 16 rows as the device does. Each loop has a line of 2048 samples;
+coefficients are recomputed every 16 samples, so the sample loop only multiplies and adds. The panel reads the
+controls once per audio block. A limiter, always on, keeps the output at or below −3 dBFS with an instant attack and a
+150 ms release, followed by a soft ceiling. The source is GPL-3.0.</p>
+</div>
+
+<!-- ================= PT ================= -->
+<div data-l="pt">
+<h1>Quatro laços que cantam</h1>
+<p class="lede">Não há oscilador neste instrumento. Todo som que ele faz é a instabilidade de uma pequena rede de laços
+de realimentação, mantida na beira em que ela começa a soar.</p>
+
+<h2><small>01</small>O laço</h2>
+<p>Cada um dos quatro canais é um circuito fechado: um pré-amplificador que satura, um bloqueio de DC, um filtro
+passa-banda, uma cadeia fixa de doze efeitos, um atraso curto e o caminho de volta ao início. A saída é gravada na
+linha de atraso e lida de novo um período depois.</p>
+<figure data-fig="fig-loop"><figcaption>Um laço. Tudo o que volta é multiplicado por GAIN; na entrada ele encontra os
+outros três laços pela matriz (× CROSS), um golpe (KICK) e um chão de ruído (HISS).</figcaption></figure>
+<p>Um laço assim oscila onde duas condições se encontram, o <span class="term">critério de Barkhausen</span>: o ganho
+ao longo do laço chega a um, e a fase ao longo do laço é um número inteiro de voltas.</p>
+<div class="eq">|G · B(e<sup>jω</sup>)| ≥ 1  e  ω τ + ∠B(e<sup>jω</sup>) = 2π k</div>
+<p>O atraso τ oferece um pente de frequências candidatas, k/τ. O passa-banda B, no MID, com a largura dada pelo FOCUS,
+escolhe quais delas recebem ganho um ou mais. Abaixo da unidade o laço é um ressonador: golpeado, ele soa e decai,
+como na corda dedilhada de Karplus–Strong e nas extensões de Jaffe e Smith. Acima da unidade ele não consegue ficar
+quieto: um sopro de ruído basta para dar a partida, e ele cresce até a saturação do pré puxar o ganho efetivo de volta
+a exatamente um. Esse equilíbrio, um <span class="term">ciclo-limite</span>, é o som sustentado. A saturação não é um
+efeito somado ao som; é o que mantém o laço vivo sem explodir.</p>
+<p>O atraso de cada canal se afina numa parcial do MID, de 20 Hz a 10 kHz. Em HARMONIC os quatro laços ficam em 1, 2,
+3 e 4 vezes o MID; outras listas são inarmônicas de propósito: BAR usa os modos de uma barra livre (1; 2,756; 5,404;
+8,933), BELL um aglomerado de terças menores. Quando um período não cabe na linha de 2048 amostras, o laço sobe uma
+oitava, como um circuito real se acomodaria no modo possível mais próximo.</p>
+
+<h2><small>02</small>A rede</h2>
+<p>Os quatro laços são ligados por uma matriz 4 × 4 de envios: a entrada de cada laço recebe as saídas dos outros,
+com peso e sinal. Redes lineares de atrasos acopladas por uma matriz são a estrutura clássica da reverberação
+artificial (Stautner e Puckette; Jot e Chaigne), em que a matriz é mantida sem perdas para que a rede decaia de forma
+suave. Aqui a matriz pode, de propósito, passar da unidade, e cada nó satura. O resultado é um conjunto de
+<span class="term">osciladores não lineares acoplados</span>: eles batem, puxam uns aos outros até travar juntos, se
+dividem em regimes alternados ou caem no caos quando o acoplamento é forte.</p>
+<figure data-fig="fig-net"><figcaption>A tela. A luz de uma lâmpada é o nível do laço como se ouve; o anel vermelho é o
+quanto o pré está no joelho; uma linha é um envio, lima quando positivo, azul quando inverte, tão acesa quanto o que
+passa por ela.</figcaption></figure>
+<p>As topologias são pontos de partida para a matriz: RING (cada laço alimenta o próximo), PAIRS, CHAIN (aberta, nada
+volta), STAR, ALL e TWIST, um anel cuja polaridade inverte a cada dois passos, de modo que a energia circula em
+contrafase. Cada envio também pode ser ajustado à mão na seção MATRIX, uma linha de cada vez. A diagonal da matriz é o
+ganho de cada laço. CROSS escala todos os envios de uma vez.</p>
+
+<h2><small>03</small>O pré e o DRIVE</h2>
+<p>O pré tem ganho um para sinais pequenos, então GAIN mantém o seu sentido: um é a beira. A curva vai de uma tangente
+hiperbólica (um joelho suave) a um corte duro conforme o DRIVE sobe. Um saturador normalizado num laço que oscila
+sozinho tem uma propriedade que torna inerte um controle de drive ingênuo: o laço se acomoda na amplitude que traz o
+ganho efetivo de volta a um, de modo que escalar a entrada só move o ponto de operação. A distorção de um laço que
+canta é dada pelo quanto ele está acima da unidade, não pelo nível de entrada do pré. Por isso o DRIVE faz duas
+coisas: endurece o joelho e multiplica o excesso de ganho do laço acima de um. Abaixo da unidade, onde o laço só é
+golpeado, ele molda apenas o joelho.</p>
+
+<h2><small>04</small>SCREAM: o laço curvando o próprio tempo</h2>
+<p>Ler uma linha de atraso numa posição que se move é modulação de fase: a velocidade da cabeça de leitura é uma
+mudança de altura, como no vibrato, no chorus e no flanger (Disch e Zölzer). O SCREAM move cada posição de leitura pela
+própria saída da rede:</p>
+<div class="eq">τ<sub>i</sub>(t) = τ<sub>i</sub> · 2<sup>3 s² y(t)</sup></div>
+<p>em que s é o knob e y a média das saídas dos quatro laços. O sinal agora realimenta duas vezes: como som que entra
+no laço e como modulação do próprio período do laço. Essa automodulação é parente, no domínio do tempo, da FM com
+realimentação (o índice de modulação de Chowning, aqui movido pela própria portadora). Em valores baixos, acrescenta
+bandas laterais e aspereza; em valores altos, os quatro períodos perseguem uns aos outros e a rede grita.</p>
+
+<h2><small>05</small>A cadeia fixa</h2>
+<p>Entre o passa-banda e o atraso, todo laço passa pelos mesmos doze efeitos, sempre na mesma ordem. Cada um tem quatro
+knobs, e o quarto é um MIX entre o sinal antes e depois dele; no zero o estágio é pulado, de modo que a cadeia com todos
+os MIX no zero é o laço puro. A ordem fixa é uma escolha para as mãos: um som se descreve só por posições, nunca por um
+roteamento, e o mesmo knob está sempre no mesmo lugar.</p>
+<p>Um processador fora de um laço age uma vez. Dentro de um laço, a saída passa de novo e de novo pela mesma curva, pelo
+filtro e pela saturação, então o timbre não é uma forma de onda estática, e sim a órbita de um mapa não linear. É por
+isso que um giro pequeno pode levar o laço de um regime a outro: de um tom estável a um de período dobrado, a um par
+que bate, ao ruído.</p>
+<h3>Saturação: FUZZ e BLAST</h3>
+<p>O FUZZ são dois estágios de saturação, o segundo assimétrico, como dois diodos desemparelhados; a assimetria e o
+BIAS acrescentam harmônicos pares, e um bloqueio de DC depois mantém o laço centrado. O BLAST é um corte duro de trilho
+a trilho, precedido por uma pré-ênfase de primeira ordem (EMPHASIS), que realça os agudos antes do corte, e seguido por
+um passa-baixa (TONE). Dentro de um laço acima da unidade, os dois trabalham contra o pré: a saturação mais forte baixa
+a amplitude em que o laço se acomoda e aumenta a densidade de harmônicos que voltam.</p>
+<h3>Dobra: FOLD e WRAP</h3>
+<p>O FOLD é um dobrador de onda triangular: passada a borda, a onda é refletida de volta para dentro, como nos
+dobradores analógicos analisados por Esqueda, Pöntynen, Parker e Bilbao. Cada dobra a mais acrescenta um par de pontos
+de virada, então o espectro cresce com o DEPTH de um jeito que o corte não produz. O WRAP manda o pico que passa da
+borda para o lado oposto: uma descontinuidade modular, como uma dente de serra, mais clara e mais áspera. SOFT e SMOOTH
+são um passa-baixa suave depois de cada um, para domar o aliasing que cantos tão agudos criam.</p>
+<h3>Nível e polaridade: RECTIFY e DIVIDE</h3>
+<p>O RECTIFY toma o valor absoluto (onda completa), que dobra a fundamental, ou guarda uma metade (meia onda); um limiar
+(BIAS) e um desvio acompanhado retiram o DC que a retificação cria. O DIVIDE é um par de flip-flops que trocam de estado
+nas passagens por zero subindo, dando ondas quadradas uma e duas oitavas abaixo, escaladas pelo envelope do próprio
+laço. Realimentado, um sub-harmônico oferece ao laço um período em que ele pode travar, e o laço cai uma oitava ou se
+divide.</p>
+<h3>Multiplicação: RING</h3>
+<p>O RING multiplica o laço por uma portadora: o laço vizinho ou uma senoide própria (FREQ). O produto só tem as
+frequências de soma e de diferença (Parker modela o circuito com diodos); contra o vizinho, é um segundo acoplamento,
+não linear, entre os laços, além da matriz. O DC soma um desvio à portadora e leva a modulação em anel para a modulação
+de amplitude, em que o som original volta a ser ouvido.</p>
+<h3>Fonte: STARVE</h3>
+<p>O STARVE imita um circuito com a alimentação falhando. Um envelope do nível do laço baixa o teto do estágio (SAG), e
+uma zona morta (GATE) remove os sinais abaixo de um limiar, como faz a distorção de cruzamento. RECOVER é a rapidez com
+que a fonte se recupera. No laço, o resultado respira e engasga: os trechos fortes sufocam, os fracos morrem e
+recomeçam.</p>
+<h3>Espectro: SHIFT</h3>
+<p>O SHIFT é um deslocador de frequência: o sinal vira um sinal analítico por um par de cadeias passa-tudo cujas saídas
+diferem de 90° ao longo da faixa de áudio, e é multiplicado por um fasor que gira, o que move cada componente pelo mesmo
+número de hertz, uma modulação de banda lateral única (Bode). As relações harmônicas se quebram. Dentro de um laço o
+deslocamento se soma a cada volta, então um componente sobe ou desce HZ a cada período até sair da banda: os glissandos
+sem fim da realimentação com deslocamento de frequência. SPREAD afasta um pouco cada laço; FEEDBACK é um segundo laço,
+local, em volta do deslocador.</p>
+<h3>Tempo: ECHO</h3>
+<p>O ECHO é um atraso curto, de 2 a 27 ms, dentro de cada laço, com realimentação própria, um tempo um pouco diferente
+em cada laço e uma modulação lenta (WOW). Ele acrescenta um segundo pente dentro do primeiro, cujos dentes batem contra
+o período do próprio laço.</p>
+<h3>Dinâmica: PUMP</h3>
+<p>O PUMP é um compressor por antecipação dentro do laço (Giannoulis, Massberg e Reiss dão o desenho geral): o envelope
+segue o nível com ATTACK e RELEASE, e o ganho cai conforme o nível sobe. Num laço acima da unidade, ele briga com o
+crescimento: o laço incha, é empurrado para baixo, incha de novo, uma oscilação de relaxação cujo ritmo é dado pelo
+RELEASE.</p>
+<h3>Filtro: SWEEP</h3>
+<p>O SWEEP é um passa-banda ressonante (um filtro de variáveis de estado na forma que preserva a topologia, descrita por
+Zavalishin) cujo centro sobe a partir do BASE pelo envelope do próprio laço, com o RANGE dizendo quanto. É um filtro de
+envelope e, no laço, fecha um terceiro caminho de realimentação: quanto mais alto o laço, mais aguda a banda, o que
+muda o que volta.</p>
+
+<h2><small>06</small>Depois da rede: DELAY e REVERB</h2>
+<p>Os laços 1 e 3 somam à esquerda, 2 e 4 à direita, e passam pelo portão de saída. O DELAY é um pingue-pongue de 10 a
+120 ms: as repetições de cada lado entram no outro por um passa-baixa (TONE), então os ecos alternam e escurecem. O
+REVERB é uma rede de atrasos realimentada de quatro linhas (601, 743, 919 e 1097 amostras, primos entre si para que os
+ecos não coincidam), misturadas por uma matriz de Hadamard 4 × 4, que é ortogonal e portanto sem perdas, com um ganho
+abaixo de um (SIZE) e um passa-baixa em cada linha (DAMP), como em Jot e Chaigne e nos primeiros desenhos de Schroeder.
+WIDTH abre as saídas entre os dois lados. Como os dois vêm depois do portão, um CUT deixa as caudas soando.</p>
+
+<h2><small>07</small>Toque</h2>
+<p>As teclas são pads. Um pad branco é um <span class="term">KICK</span>: um sopro curto de ruído colorido injetado em
+um, dois ou nos quatro laços, do escuro e longo à esquerda ao claro e curto à direita. Segurar um pad também mantém
+aberto o caminho de volta dos laços; soltar fecha a volta em 60 ms, de modo que um laço acima da unidade só canta
+enquanto o pad é seguro, e um laço abaixo da unidade soa até sumir. O DRONE trava a volta aberta.</p>
+<p>Os pads pretos são portões. CUT fecha a saída, OPEN segura a volta aberta sem golpe, RETURN corta a volta para que o
+laço morra e renasça ao soltar. CHOP corta a saída no ritmo da própria rede: conta as passagens por zero subindo e
+troca a cada 32, 16, 8 ou 4, então o ritmo é a altura, e muda quando o som muda. SCATTER corta em intervalos ao acaso,
+de cerca de 4 a 32 por segundo. Todo portão faz rampa em 0,5 ms, curto o bastante para soar seco, longo o bastante para
+não estalar.</p>
+
+<h2><small>08</small>Modulação, motion e morph</h2>
+<p>Quatro fontes podem mover qualquer knob: dois LFOs (um triângulo e uma quadrada de bordas suavizadas, de 0,05 a
+20 Hz), um RANDOM que sorteia um valor novo no seu ritmo e desliza até ele tanto quanto o SMOOTH permite, e o FOLLOW, o
+nível de saída da própria rede. O FOLLOW é mais um caminho de realimentação, mais lento que o áudio: quanto mais alta a
+rede, mais o knob se move, o que muda o quanto a rede soa alto. Um som guarda até oito dessas atribuições, cada uma com
+uma profundidade com sinal.</p>
+<p>O MOTION grava as posições dos knobs enquanto está seguro, 40 pontos por trilha ao longo do tempo segurado (até
+8 s), e as toca de volta em laço. O MORPH trata um som como um vetor de posições e anda em linha reta do atual até um
+guardado; as listas que não se interpolam (topologia, parciais, as modulações) trocam no meio do caminho.</p>
+
+<h2><small>09</small>Controles que se espalham pelo curso</h2>
+<p>Uma rede de realimentação concentra o comportamento interessante em regiões estreitas: o GAIN quase não muda nada até
+chegar perto de um, e então muda tudo de uma vez. Um knob linear desperdiçaria a maior parte do giro. Por isso cada
+knob, os dos efeitos incluídos, passa por uma curva de 17 pontos construída por medição: o knob é percorrido em passos
+sobre sons de referência, a mudança audível entre passos vizinhos é medida como uma distância espectral, e a curva é a
+inversa da mudança acumulada, de modo que giros iguais viram passos iguais para o ouvido. O GAIN guarda uma região larga
+em volta da unidade, onde o laço passa de golpeado a cantando.</p>
+<p>O teclado também pode virar um ribbon: com o RIBBON seguro, as 27 teclas são 27 posições do último knob mexido, então
+um salto pelo curso inteiro é um toque só, e deslizar é varrer.</p>
+
+<h2><small>10</small>A tela diz a verdade</h2>
+<p>Nada na tela é desenhado a partir de uma fórmula sobre o que o som deveria ser. A luz de uma lâmpada é o RMS do laço
+como ele chega à saída (então um laço cortado ou mudo apaga); o anel vermelho mede o quanto o pré comprime; o brilho de
+cada linha é o RMS do que passa naquele envio. Quando um controle é tocado, o nome e o valor como o som o tem (hertz,
+semitons, decibéis, o ganho real do laço) aparecem grandes por um instante, e então as lâmpadas voltam.</p>
+
+<h2><small>11</small>Linhagem</h2>
+<p>O ancestral musical mais próximo é a mesa sem entrada (no-input mixing board): um mixer cujas saídas voltam às
+próprias entradas, tocado nos equalizadores e nos envios auxiliares, uma prática que cresceu nas cenas de improvisação e
+de ruído do Japão e da Europa a partir do fim dos anos 1990. O FAÍSCA guarda a anatomia dela (pré-amplificadores,
+equalizadores, envios auxiliares entre canais, um chão de chiado que dá a partida) e a torna pequena, repetível e
+tocável com uma mão nos pads. O quadro mais amplo é a análise da realimentação como sistema musical, em que quem toca
+conduz um processo instável em vez de disparar sons (Sanfilippo e Valle), a visão ecossistêmica do processamento de
+sinal, em que o som é a interface (Di Scipio), e a longa prática da microfonia de microfones e alto-falantes como
+instrumento (van Eck).</p>
+
+<h2><small>12</small>Implementação</h2>
+<p>Um pequeno núcleo em C, sem biblioteca e sem função de biblioteca matemática, roda no instrumento e no navegador. A
+versão do navegador é esse mesmo núcleo compilado para WebAssembly e rodando na thread de áudio a 44,1 kHz; a tela é o
+próprio quadro de 240 × 240 do núcleo, desenhado em faixas de 16 linhas como no aparelho. Cada laço tem uma linha de
+2048 amostras; os coeficientes são recalculados a cada 16 amostras, de modo que o laço por amostra só multiplica e
+soma. O painel lê os controles uma vez por bloco de áudio. Um limitador, sempre ligado, mantém a saída em −3 dBFS ou
+abaixo, com ataque instantâneo e soltura de 150 ms, seguido de um teto suave. O código é GPL-3.0.</p>
+</div>
+
+<h2 data-l="en">References</h2><h2 data-l="pt">Referências</h2>
+<ul class="refs">
+  <li>Barkhausen, H. (1935). <i>Lehrbuch der Elektronen-Röhren und ihrer technischen Anwendungen</i>, vol. 3. Leipzig: Hirzel.</li>
+  <li>Bode, H. (1984). History of electronic sound modification. <i>Journal of the Audio Engineering Society</i>, 32(10), 730–739.</li>
+  <li>Chowning, J. M. (1973). The synthesis of complex audio spectra by means of frequency modulation. <i>Journal of the Audio Engineering Society</i>, 21(7), 526–534.</li>
+  <li>Di Scipio, A. (2003). ‘Sound is the interface’: from interactive to ecosystemic signal processing. <i>Organised Sound</i>, 8(3), 269–277.</li>
+  <li>Disch, S., &amp; Zölzer, U. (1999). Modulation and delay line based digital audio effects. <i>Proceedings of the 2nd COST G-6 Workshop on Digital Audio Effects (DAFx-99)</i>, Trondheim.</li>
+  <li>Esqueda, F., Pöntynen, H., Parker, J. D., &amp; Bilbao, S. (2017). Virtual analog models of the Lockhart and Serge wavefolders. <i>Applied Sciences</i>, 7(12), 1328.</li>
+  <li>Giannoulis, D., Massberg, M., &amp; Reiss, J. D. (2012). Digital dynamic range compressor design: a tutorial and analysis. <i>Journal of the Audio Engineering Society</i>, 60(6), 399–408.</li>
+  <li>Jaffe, D. A., &amp; Smith, J. O. (1983). Extensions of the Karplus-Strong plucked-string algorithm. <i>Computer Music Journal</i>, 7(2), 56–69.</li>
+  <li>Jot, J.-M., &amp; Chaigne, A. (1991). Digital delay networks for designing artificial reverberators. <i>90th Convention of the Audio Engineering Society</i>, Paris, preprint 3030.</li>
+  <li>Karplus, K., &amp; Strong, A. (1983). Digital synthesis of plucked-string and drum timbres. <i>Computer Music Journal</i>, 7(2), 43–55.</li>
+  <li>Parker, J. (2011). A simple digital model of the diode-based ring-modulator. <i>Proceedings of the 14th International Conference on Digital Audio Effects (DAFx-11)</i>, Paris.</li>
+  <li>Sanfilippo, D., &amp; Valle, A. (2013). Feedback systems: an analytical framework. <i>Computer Music Journal</i>, 37(2), 12–27.</li>
+  <li>Schroeder, M. R. (1962). Natural sounding artificial reverberation. <i>Journal of the Audio Engineering Society</i>, 10(3), 219–223.</li>
+  <li>Smith, J. O. (1992). Physical modeling using digital waveguides. <i>Computer Music Journal</i>, 16(4), 74–91.</li>
+  <li>Stautner, J., &amp; Puckette, M. (1982). Designing multi-channel reverberators. <i>Computer Music Journal</i>, 6(1), 52–65.</li>
+  <li>Van Eck, C. (2017). <i>Between Air and Electricity: Microphones and Loudspeakers as Musical Instruments</i>. New York: Bloomsbury.</li>
+  <li>Zavalishin, V. (2018). <i>The Art of VA Filter Design</i>, rev. 2.1.0. Native Instruments.</li>
+  <li>Zölzer, U. (Ed.). (2011). <i>DAFX: Digital Audio Effects</i> (2nd ed.). Chichester: Wiley.</li>
+</ul>
+</div>
+</main>
+</div>
+<footer class="footer reading-foot">
+  <a href="https://usina.ruido.art.br" class="brand">ruído<span>INSTRUMENTOS</span></a>
+  <p data-l="en">FAÍSCA / A NOISEBOX FOR THE HANDS.<br>FM-1 is a trademark of its manufacturer. FAÍSCA is not affiliated with it or endorsed by it.</p>
+  <p data-l="pt">FAÍSCA / UMA CAIXA DE RUÍDO PARA AS MÃOS.<br>FM-1 é marca do seu fabricante. O FAÍSCA não é afiliado a ele nem endossado por ele.</p>
+  <span><a href="legal.html">LEGAL</a> · <a href="recovery.html"><span data-l="en">RECOVERY</span><span data-l="pt">RECUPERAÇÃO</span></a><br>FAÍSCA / RUÍDO · GPL-3.0</span>
+</footer>
+<script>
+// the figures, once for each language
+for(const f of document.querySelectorAll("figure[data-fig]")){const t=document.getElementById(f.dataset.fig);if(t)f.prepend(t.content.cloneNode(true));}
+</script>
+<script src="site.js"></script>
+</body>
+</html>

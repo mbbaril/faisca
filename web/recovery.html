@@ -1,0 +1,168 @@
+<!doctype html>
+<!-- SPDX-License-Identifier: GPL-3.0-only  Copyright (C) 2026 Mario Baril -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#000000">
+<meta name="description" content="FAÍSCA: the ways back to a working FM-1, from the official firmware to a unit recovered with a second unit as helper.">
+<title>FAÍSCA Recovery</title>
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="site.css">
+</head>
+<body>
+<a class="skip" href="#content"><span data-l="en">Skip to the content</span><span data-l="pt">Ir para o conteúdo</span></a>
+<header class="reading-head"><div class="head-inner">
+  <a class="reading-brand" href="index.html">FAÍSCA<small><span data-l="en">RECOVERY · BY RUÍDO</span><span data-l="pt">RECUPERAÇÃO · POR RUÍDO</span></small></a>
+  <nav aria-label="Site"><a href="index.html"><span data-l="en">Project</span><span data-l="pt">Projeto</span></a><a href="play.html"><span data-l="en">Play</span><span data-l="pt">Tocar</span></a><a href="manual.html"><span data-l="en">Manual</span><span data-l="pt">Manual</span></a><a href="theory.html"><span data-l="en">Theory</span><span data-l="pt">Teoria</span></a><a href="cheatsheet.html"><span data-l="en">Cheat sheet</span><span data-l="pt">Folha de consulta</span></a></nav>
+  <div class="lang" role="group" aria-label="Language"><button type="button" id="en">EN</button><button type="button" id="pt">PT</button></div>
+</div></header>
+<div class="doc-layout">
+<aside class="chapter-list" aria-label="Chapters"><p class="toc-label"><span data-l="en">Chapters</span><span data-l="pt">Capítulos</span></p><nav class="toc" data-toc></nav></aside>
+<main class="doc-content" id="content">
+<div class="doc-meta"><span>FAÍSCA / <span data-l="en">RECOVERY</span><span data-l="pt">RECUPERAÇÃO</span></span><span data-l="en">Last revised 22 Nov 2026</span><span data-l="pt">Revisto em 22 nov 2026</span></div>
+<details class="mobile-index"><summary><span data-l="en">Chapters</span><span data-l="pt">Capítulos</span></summary><nav class="toc" data-toc></nav></details>
+<div class="article">
+<div data-l="en">
+<h1>The ways back</h1>
+<p class="lede">FAÍSCA is not released yet. When it is, it will run on fm1-base, an open platform for the FM-1 that
+keeps several ways back to a working unit. They are listed here from the mildest to the strongest: try them in this
+order.</p>
+<p><strong>Before any install:</strong> back up your projects, sounds and samples with the official workbench, and keep
+the backup files. Use Chrome or Edge on a computer and a USB cable that carries data, not only charge. Keep the unit
+powered while anything is being written.</p>
+
+<h2><small>01</small>Back to the official firmware</h2>
+<p>For a unit that starts. Open the official <a href="https://open.m-vave.com/fm1-workbench">FM-1 workbench</a> in Chrome or Edge, connect the FM-1, switched
+on, allow MIDI access when the browser asks, and install the official firmware. The workbench can return a unit to the
+original firmware and migrate it from compatible third-party firmware (a forced install, with its own confirmation).
+Then restore your backup.</p>
+<table><tbody>
+<tr><td>Official firmware</td><td><a href="https://www.m-vave.com/download">M-VAVE's download centre</a>, under FM-1: the firmware and its release notes.</td></tr>
+<tr><td>Official workbench</td><td><a href="https://open.m-vave.com/fm1-workbench">open.m-vave.com/fm1-workbench</a>: update, return to the original firmware, back up and restore.</td></tr>
+<tr><td>FM1 Open</td><td>The maker's open edition: <a href="https://github.com/m-vave/fm1_open">source and SDK</a> and <a href="https://github.com/m-vave/fm1_open/releases">releases</a>.</td></tr>
+</tbody></table>
+<p>Switching firmware does not make projects and samples of one firmware readable by another: keep the backups made
+under the official firmware to restore under it.</p>
+
+<h2><small>02</small>Safe mode</h2>
+<p>For a firmware that does not start. A firmware built on fm1-base that fails to start twice in a row starts the
+unit in <span class="term">SAFE MODE</span>: there is no sound, but USB works, so a web installer can still reach the
+unit.</p>
+<ol>
+<li>Switch the unit off and on again; after two failed starts it shows safe mode.</li>
+<li>Press PLAY to try starting the firmware again.</li>
+<li>Or connect it and, from the installer, install the firmware again or put the official firmware back.</li>
+</ol>
+<p>If safe mode itself fails twice, the unit falls back to the chip's own update mode (04).</p>
+
+<h2><small>03</small>The bootloader's recovery menu</h2>
+<p>Where present. The fm1-base installer can also install <a href="https://github.com/jvitkauskas/m-bootloader">m-bootloader</a> (MIT), a small bootloader with a
+recovery menu. On a unit that has it, hold PLAY while switching the unit on to open the menu; from there a firmware
+package can be installed over MIDI even when the firmware will not start. Hold REC while switching on to put the unit
+in update mode, which the installer can reach.</p>
+
+<h2><small>04</small>The chip's update mode</h2>
+<p>For a unit stuck in a crash loop, without m-bootloader. Holding REC at power-on then starts the chip's own update
+mode, which an ordinary installer cannot reach. The rescue script in <a href="https://github.com/hugelton/felucca-bsp">felucca-bsp</a>
+(<code>tools/fm1_rescue.sh</code>, macOS and Linux, MPL-2.0) puts the official firmware back through that mode with no
+extra hardware: it checks the official firmware files against their known hashes and writes only those. Follow the
+script's own instructions.</p>
+
+<h2><small>05</small>A unit that shows nothing</h2>
+<p>For a unit with a dark screen that does not appear over USB at all. <a href="https://github.com/jvitkauskas/m-unbricker">m-unbricker</a> (MIT) recovers it
+with a second, working unit and a USB-C cable. In outline; its <a href="https://jvitkauskas.github.io/m-apps/unbricker/">step-by-step page</a> gives the details:</p>
+<ol>
+<li>Have a second unit that works and that m-unbricker supports. Nothing is installed on it: the recovery program runs
+from its memory, and its own firmware and settings stay.</li>
+<li>Open the step-by-step page in Chrome or Edge on a computer, connect the working unit by USB and allow MIDI access
+when the browser asks. The page starts the recovery program on the working unit.</li>
+<li>The working unit's screen then guides you: move the USB-C cable to the broken unit and switch it on. The working
+unit puts the broken unit's chip into its download mode and repairs it, whatever is in its memory.</li>
+<li>Then install the official firmware (01), if it is not already back, and restore your backup.</li>
+</ol>
+
+<h2><small>06</small>Credits</h2>
+<p>m-unbricker and m-bootloader are by Julius Vitkauskas (MIT). fm1-base is by Charles Vestal and its contributors
+(MPL-2.0), built on felucca-bsp by Leo Kuroshita, Hügelton Instruments (MPL-2.0); the rescue script is Charles
+Vestal's, in felucca-bsp. The official firmware, the workbench and FM1 Open are M-VAVE's. None of them made, reviewed
+or endorse FAÍSCA. Every step on this page is at your own risk: see the <a href="legal.html">legal page</a>.</p>
+</div>
+
+<div data-l="pt">
+<h1>Os caminhos de volta</h1>
+<p class="lede">O FAÍSCA ainda não foi lançado. Quando for, ele vai rodar sobre o fm1-base, uma plataforma aberta para o
+FM-1 que guarda vários caminhos de volta a uma unidade funcionando. Eles estão aqui do mais leve ao mais forte: tente
+nesta ordem.</p>
+<p><strong>Antes de qualquer instalação:</strong> faça o backup dos projetos, sons e samples pelo workbench oficial e
+guarde os arquivos. Use Chrome ou Edge num computador e um cabo USB que passe dados, não só carga. Mantenha a unidade
+ligada enquanto algo estiver sendo gravado.</p>
+
+<h2><small>01</small>Voltar ao firmware oficial</h2>
+<p>Para uma unidade que liga. Abra o <a href="https://open.m-vave.com/fm1-workbench">workbench oficial do FM-1</a> no Chrome ou no Edge, conecte o FM-1, ligado,
+permita o acesso MIDI quando o navegador pedir e instale o firmware oficial. O workbench consegue voltar uma unidade ao
+firmware original e migrá-la de um firmware de terceiros compatível (uma instalação forçada, com confirmação própria).
+Depois, restaure o backup.</p>
+<table><tbody>
+<tr><td>Firmware oficial</td><td><a href="https://www.m-vave.com/download">Central de downloads da M-VAVE</a>, em FM-1: o firmware e as notas da versão.</td></tr>
+<tr><td>Workbench oficial</td><td><a href="https://open.m-vave.com/fm1-workbench">open.m-vave.com/fm1-workbench</a>: atualizar, voltar ao firmware original, fazer e restaurar backup.</td></tr>
+<tr><td>FM1 Open</td><td>A edição aberta do fabricante: <a href="https://github.com/m-vave/fm1_open">código e SDK</a> e <a href="https://github.com/m-vave/fm1_open/releases">versões</a>.</td></tr>
+</tbody></table>
+<p>Trocar de firmware não torna os projetos e samples de um firmware legíveis por outro: guarde os backups feitos sob o
+firmware oficial para restaurá-los sob ele.</p>
+
+<h2><small>02</small>Modo seguro</h2>
+<p>Para um firmware que não liga. Um firmware construído sobre o fm1-base que falha duas vezes seguidas ao ligar faz a
+unidade entrar em <span class="term">SAFE MODE</span> (modo seguro): não há som, mas a USB funciona, então um instalador
+web ainda alcança a unidade.</p>
+<ol>
+<li>Desligue e ligue a unidade de novo; depois de duas partidas falhas ela mostra o modo seguro.</li>
+<li>Aperte PLAY para tentar ligar o firmware de novo.</li>
+<li>Ou conecte-a e, pelo instalador, instale o firmware de novo ou devolva o firmware oficial.</li>
+</ol>
+<p>Se o próprio modo seguro falhar duas vezes, a unidade cai no modo de atualização do próprio chip (04).</p>
+
+<h2><small>03</small>O menu de recuperação do bootloader</h2>
+<p>Onde houver. O instalador do fm1-base também pode instalar o <a href="https://github.com/jvitkauskas/m-bootloader">m-bootloader</a> (MIT), um pequeno bootloader
+com menu de recuperação. Numa unidade que o tenha, segure PLAY enquanto liga a unidade para abrir o menu; dali um pacote
+de firmware pode ser instalado por MIDI mesmo quando o firmware não liga. Segure REC enquanto liga para pôr a unidade em
+modo de atualização, que o instalador alcança.</p>
+
+<h2><small>04</small>O modo de atualização do chip</h2>
+<p>Para uma unidade presa num laço de travamento, sem o m-bootloader. Segurar REC ao ligar inicia então o modo de
+atualização do próprio chip, que um instalador comum não alcança. O script de resgate do <a href="https://github.com/hugelton/felucca-bsp">felucca-bsp</a>
+(<code>tools/fm1_rescue.sh</code>, macOS e Linux, MPL-2.0) devolve o firmware oficial por esse modo, sem hardware extra:
+ele confere os arquivos do firmware oficial pelos seus hashes conhecidos e grava só esses. Siga as instruções do próprio
+script.</p>
+
+<h2><small>05</small>Uma unidade que não mostra nada</h2>
+<p>Para uma unidade com a tela apagada que nem aparece na USB. O <a href="https://github.com/jvitkauskas/m-unbricker">m-unbricker</a> (MIT) a recupera com uma
+segunda unidade, funcionando, e um cabo USB-C. Em linhas gerais; a <a href="https://jvitkauskas.github.io/m-apps/unbricker/">página passo a passo</a> dele dá os detalhes:</p>
+<ol>
+<li>Tenha uma segunda unidade que funcione e que o m-unbricker aceite. Nada é instalado nela: o programa de recuperação
+roda na memória dela, e o firmware e as configurações dela continuam.</li>
+<li>Abra a página passo a passo no Chrome ou no Edge, num computador, conecte a unidade que funciona pela USB e permita o
+acesso MIDI quando o navegador pedir. A página inicia o programa de recuperação na unidade que funciona.</li>
+<li>A tela da unidade que funciona passa a guiar você: leve o cabo USB-C para a unidade travada e ligue-a. A unidade que
+funciona põe o chip da travada no modo de download e a conserta, seja o que for que haja na memória dela.</li>
+<li>Depois instale o firmware oficial (01), se ele ainda não tiver voltado, e restaure o backup.</li>
+</ol>
+
+<h2><small>06</small>Créditos</h2>
+<p>O m-unbricker e o m-bootloader são de Julius Vitkauskas (MIT). O fm1-base é de Charles Vestal e colaboradores
+(MPL-2.0), construído sobre o felucca-bsp de Leo Kuroshita, Hügelton Instruments (MPL-2.0); o script de resgate é de
+Charles Vestal, no felucca-bsp. O firmware oficial, o workbench e o FM1 Open são da M-VAVE. Nenhum deles fez, revisou
+ou endossa o FAÍSCA. Cada passo desta página é por sua conta e risco: veja a <a href="legal.html">página legal</a>.</p>
+</div>
+</div>
+</main>
+</div>
+<footer class="footer reading-foot">
+  <a href="https://usina.ruido.art.br" class="brand">ruído<span>INSTRUMENTOS</span></a>
+  <p data-l="en">FAÍSCA / A NOISEBOX FOR THE HANDS.<br>FM-1 is a trademark of its manufacturer. FAÍSCA is not affiliated with it or endorsed by it.</p>
+  <p data-l="pt">FAÍSCA / UMA CAIXA DE RUÍDO PARA AS MÃOS.<br>FM-1 é marca do seu fabricante. O FAÍSCA não é afiliado a ele nem endossado por ele.</p>
+  <span><a href="legal.html">LEGAL</a> · <a href="recovery.html"><span data-l="en">RECOVERY</span><span data-l="pt">RECUPERAÇÃO</span></a><br>FAÍSCA / RUÍDO · GPL-3.0</span>
+</footer>
+<script src="site.js"></script>
+</body>
+</html>

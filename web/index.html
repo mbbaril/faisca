@@ -1,0 +1,401 @@
+<!doctype html>
+<!-- SPDX-License-Identifier: GPL-3.0-only  Copyright (C) 2026 Mario Baril -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#000000">
+<meta name="description" content="FAÍSCA: an open noisebox firmware for the FM-1. Four coupled feedback loops, a fixed chain of twelve effects, played with the hands. GPL-3.0, with a browser emulator built from the same C core.">
+<title>FAÍSCA — a noisebox for the FM-1</title>
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="site.css">
+</head>
+<body>
+<a class="skip" href="#content"><span data-l="en">Skip to the content</span><span data-l="pt">Ir para o conteúdo</span></a>
+<div class="edition-line"><span data-l="en">Emulator 22 Nov 2026 · Device firmware not released</span><span data-l="pt">Emulador 22 nov 2026 · Firmware do aparelho não lançado</span></div>
+<header class="masthead wrap">
+  <a href="index.html" class="brand" aria-label="FAÍSCA">FAÍSCA<span data-l="en">BY RUÍDO</span><span data-l="pt">POR RUÍDO</span></a>
+  <nav aria-label="Site">
+    <a href="#start"><span data-l="en">Start</span><span data-l="pt">Começar</span></a>
+    <a href="manual.html">Manual</a>
+    <a href="theory.html"><span data-l="en">Theory</span><span data-l="pt">Teoria</span></a>
+    <a href="#device"><span data-l="en">The device</span><span data-l="pt">O aparelho</span></a>
+    <a href="https://github.com/mbbaril/faisca"><span data-l="en">Source</span><span data-l="pt">Código</span></a>
+  </nav>
+  <div class="head-end">
+    <div class="lang" role="group" aria-label="Language"><button type="button" id="en">EN</button><button type="button" id="pt">PT</button></div>
+    <a class="nav-play" href="play.html"><span data-l="en">Play</span><span data-l="pt">Tocar</span> <span aria-hidden="true">↗</span></a>
+  </div>
+</header>
+
+<main id="content">
+<!-- ======================= EN ======================= -->
+<div data-l="en">
+<section class="hero wrap" aria-labelledby="t-en">
+  <div>
+    <p class="eyebrow"><span class="status-dot"></span> FAÍSCA / NOISEBOX FOR THE FM-1</p>
+    <h1 id="t-en">Four loops<br>that sing.</h1>
+    <p class="intro">A free, open firmware that turns the FM-1 into a noisebox: four feedback loops joined by a send
+    matrix, a fixed chain of twelve effects inside every loop, played with the hands. There is no oscillator: every
+    sound is the network held at the edge where it starts to ring.</p>
+    <div class="actions"><a class="button primary" href="play.html">Play in the browser <span aria-hidden="true">↗</span></a>
+      <a class="button secondary" href="#device">Install on the FM-1 <span class="tag">NOT RELEASED</span></a></div>
+    <p class="action-note">The emulator runs the firmware's own C core. No FM-1 needed.<br>Keyboard, touch or a MIDI controller.</p>
+  </div>
+  <div class="object">
+    <div class="object-top"><span>01 — The instrument, live</span><span>240 × 240</span></div>
+    <iframe src="play.html" title="FAÍSCA emulator" loading="lazy" allow="midi; autoplay"></iframe>
+    <div class="object-bottom"><span>The core's own screen, drawn as the unit draws it</span><span>Power, then a white pad</span></div>
+  </div>
+</section>
+<div class="spec-strip"><div class="wrap"><span>FOUR LOOPS</span><span>TWELVE EFFECTS</span><span>NO OSCILLATOR</span><span>MIDI</span><span>GPL-3.0</span></div></div>
+
+<section class="section wrap" id="start">
+  <div class="section-heading"><p class="eyebrow">02 — Start here</p><h2>Play.<br>Learn. Install.</h2>
+    <p>Three steps, all in the browser. Try it before touching your unit.</p></div>
+  <div class="stories">
+    <article><span class="num">01 / Play</span><h3>In the browser.</h3>
+      <p>The emulator is the firmware's core compiled to WebAssembly. Computer keyboard, touch, or a MIDI controller
+      with its own panel for ports, channel and MIDI learn.</p>
+      <a class="text-link" href="play.html">Open the emulator <span aria-hidden="true">↗</span></a></article>
+    <article><span class="num">02 / Learn</span><h3>Five rules, one map.</h3>
+      <p>Five rules cover the whole instrument. The manual's map shows what every control does alone, held and in
+      combination; the cheat sheet fits on one page.</p>
+      <a class="text-link" href="manual.html">Read the manual <span aria-hidden="true">↗</span></a>
+      <a class="text-link" href="cheatsheet.html">Cheat sheet <span aria-hidden="true">↗</span></a></article>
+    <article><span class="num">03 / Install</span><h3>Not released yet.</h3>
+      <p>The device firmware is being built and tested in stages, each one checked on the hardware before the next.
+      Nothing is offered to install until it is finished. Read the risks and the ways back first.</p>
+      <a class="text-link off" href="#device">Status and risks <span aria-hidden="true">↓</span></a></article>
+  </div>
+  <p class="action-note">You need a recent browser to play; Chrome or Edge for MIDI. For the device, when there is a
+  release: Chrome or Edge on a computer, and a USB cable that carries data.</p>
+</section>
+
+<section class="section wrap" id="sound">
+  <div class="section-heading"><p class="eyebrow">03 — The sound</p><h2>One chain.<br>Always the same.</h2>
+    <p>Each of the four loops runs the same fixed chain, in this order, and writes the result into its delay line,
+    which feeds the loop again one period later. The fourth knob of every effect is its MIX; at zero the effect is not
+    in the path.</p></div>
+  <ol class="chain" aria-label="The chain inside each loop">
+    <li class="ext"><span>RETURN + MATRIX + KICK + HISS</span></li><li><span>DRIVE</span></li><li><span>BAND · MID FOCUS</span></li>
+    <li><span>FUZZ</span></li><li><span>BLAST</span></li><li><span>FOLD</span></li><li><span>WRAP</span></li><li><span>RECTIFY</span></li><li><span>DIVIDE</span></li>
+    <li><span>RING</span></li><li><span>STARVE</span></li><li><span>SHIFT</span></li><li><span>ECHO</span></li><li><span>PUMP</span></li><li><span>SWEEP</span></li>
+    <li><span>LOOP DELAY · PITCH SCREAM</span></li>
+  </ol>
+  <ol class="chain" aria-label="After the network">
+    <li class="ext"><span>LOOPS 1+3 LEFT · 2+4 RIGHT</span></li><li><span>GATE</span></li><li><span>DELAY</span></li><li><span>REVERB</span></li><li><span>LEVEL</span></li><li><span>LIMITER</span></li>
+  </ol>
+  <div class="two">
+    <div class="prose"><p>The loops are tuned to partials of MID, from 20 Hz to 10 kHz. GAIN sets how much each loop
+    gives back: below unity the loops ring when struck and fade; above it they sing on their own, and the preamp's
+    saturation holds them there. CROSS scales the 4 × 4 matrix of signed sends between the loops; SCREAM lets the
+    output bend the loops' own delay times. A limiter that cannot be switched off keeps the output at or below
+    −3 dBFS. The <a href="theory.html">theory</a> explains the physics.</p></div>
+    <div class="table-scroll"><table class="data">
+      <thead><tr><th>Effect</th><th>Knobs</th><th>What it does</th></tr></thead><tbody>
+      <tr><td>FUZZ</td><td class="m">GAIN TONE BIAS</td><td>Two saturating stages, the second asymmetric; up to +60 dB.</td></tr>
+      <tr><td>BLAST</td><td class="m">GAIN TONE EMPHASIS</td><td>A hard clip from rail to rail, the highs lifted before it.</td></tr>
+      <tr><td>FOLD</td><td class="m">DEPTH BIAS SOFT</td><td>A triangle wavefolder, up to +24 dB into the fold.</td></tr>
+      <tr><td>WRAP</td><td class="m">DEPTH BIAS SMOOTH</td><td>A peak past the edge comes back on the other side.</td></tr>
+      <tr><td>RECTIFY</td><td class="m">HALF BIAS TONE</td><td>Full wave (the octave above) to half wave.</td></tr>
+      <tr><td>DIVIDE</td><td class="m">OCTAVE WIDTH TONE</td><td>Flip-flops: squares one or two octaves below.</td></tr>
+      <tr><td>RING</td><td class="m">CARRIER FREQ DC</td><td>Ring modulation by the neighbour loop or its own sine.</td></tr>
+      <tr><td>STARVE</td><td class="m">SAG GATE RECOVER</td><td>A weak supply: the headroom sags, small signals die.</td></tr>
+      <tr><td>SHIFT</td><td class="m">HZ SPREAD FEEDBACK</td><td>A frequency shifter, ±400 Hz.</td></tr>
+      <tr><td>ECHO</td><td class="m">TIME FEEDBACK WOW</td><td>A short echo inside each loop, 2 to 27 ms.</td></tr>
+      <tr><td>PUMP</td><td class="m">DEPTH ATTACK RELEASE</td><td>A compressor inside the loop: it ducks, then swells.</td></tr>
+      <tr><td>SWEEP</td><td class="m">RANGE BASE RESO</td><td>A resonant band-pass moved by the loop's own level.</td></tr>
+      <tr><td>DELAY</td><td class="m">TIME FEEDBACK TONE</td><td>After the network: ping-pong, 10 to 120 ms.</td></tr>
+      <tr><td>REVERB</td><td class="m">SIZE DAMP WIDTH</td><td>After the network: a small, bright four-line network.</td></tr>
+    </tbody></table></div>
+  </div>
+</section>
+
+<section class="section wrap" id="rules">
+  <div class="section-heading"><p class="eyebrow">04 — Orientation</p><h2>Five rules.<br>One map.</h2>
+    <p>Learn these once and you know the whole instrument. The <a class="inline" href="manual.html"><u>manual</u></a>
+    has the map of every control.</p></div>
+  <ol class="rules">
+    <li><span class="num">01</span><b>Three knobs never change</b>CROSS, SCREAM and GAIN, and LEVEL on the pot.</li>
+    <li><span class="num">02</span><b>One button, one section</b>K1 to K4 play the lit section: LOOP, CHAN, MATRIX, SHAPE, FX, DELAY, REVERB, MOD. CHAN, MATRIX and FX step on when pressed again.</li>
+    <li><span class="num">03</span><b>Holding is a layer</b>MEMORY and STORE: the sixteen sounds on the white keys. FX: the twelve effects. LFO: the sources, and a turned knob gets a depth. RIBBON: the keys become positions.</li>
+    <li><span class="num">04</span><b>The fourth knob is MIX</b>In every effect. At zero the effect is not in the path.</li>
+    <li><span class="num">05</span><b>The screen says what you touched</b>Name and value, large, for a moment; then the four lamps.</li>
+  </ol>
+</section>
+
+<section class="section wrap" id="midi">
+  <div class="section-heading"><p class="eyebrow">05 — MIDI</p><h2>The same map<br>everywhere.</h2>
+    <p>The map lives in the shared core, so the emulator and the firmware read MIDI the same way. Channel: any, or one
+    of 1 to 16. Note-on with velocity 0 counts as note-off.</p></div>
+  <div class="two">
+    <div class="table-scroll"><table class="data"><thead><tr><th>Message</th><th>Control</th></tr></thead><tbody>
+      <tr><td>NOTE 53–79</td><td>The 27 pads, F3 to G5 (C4 = 60)</td></tr>
+      <tr><td>NOTE 36–49</td><td>The 14 buttons: MOTION, RIBBON, LOOP, CHAN, MATRIX, SHAPE, MEMORY, LFO, FX, DELAY, REVERB, MOD, DRONE, STORE</td></tr>
+      <tr><td>CC 20–23</td><td>K1–K4, the section in use (absolute)</td></tr>
+      <tr><td>CC 24 · 25 · 26</td><td>CROSS · SCREAM · GAIN</td></tr>
+      <tr><td>CC 7</td><td>LEVEL, until the pot is moved</td></tr>
+      <tr><td>CC 120 · 123</td><td>Releases everything held by MIDI</td></tr>
+    </tbody></table></div>
+    <div class="prose"><p>In the emulator, the MIDI panel under the instrument chooses the input and output ports and
+    the channel, and keeps the bindings made by MIDI learn (Alt-click a control, then move a MIDI control): clear,
+    export and import them as JSON. The output sends the knobs as CC and the lamps as notes on the same map, for
+    controllers that can show them.</p></div>
+  </div>
+</section>
+
+<section class="section wrap" id="next">
+  <div class="section-heading"><p class="eyebrow">06 — What comes next</p><h2>Roadmap</h2>
+    <p>What is being built and tested now. Dates depend on tests on real units.</p></div>
+  <div class="table-scroll"><table class="data road"><tbody>
+    <tr><td>Device firmware</td><td>Built and tested in stages on the hardware: the screen and silence, the controls, the idle engine, the full render.</td><td><span class="state now">IN PROGRESS</span></td></tr>
+    <tr><td>The screen</td><td>Legibility from a distance, animation, views of the sound: LOOPS, SCOPE, WAVES, MATRIX.</td><td><span class="state now">IN PROGRESS</span></td></tr>
+    <tr><td>Controls on the unit</td><td>Sections and held buttons reviewed for the hands.</td><td><span class="state">IN DESIGN</span></td></tr>
+    <tr><td>MIDI on the device</td><td>The emulator's map, over USB and the MIDI input.</td><td><span class="state">PLANNED</span></td></tr>
+    <tr><td>First release</td><td>An install page, release notes, exactly what the firmware writes.</td><td><span class="state">PLANNED</span></td></tr>
+    <tr><td>Emulator and documents</td><td>The emulator with MIDI, sixteen memories, the manual, the theory, this page, in English and Portuguese.</td><td><span class="state done">DONE</span></td></tr>
+  </tbody></table></div>
+</section>
+</div>
+
+<!-- ======================= PT ======================= -->
+<div data-l="pt">
+<section class="hero wrap" aria-labelledby="t-pt">
+  <div>
+    <p class="eyebrow"><span class="status-dot"></span> FAÍSCA / CAIXA DE RUÍDO PARA O FM-1</p>
+    <h1 id="t-pt">Quatro laços<br>que cantam.</h1>
+    <p class="intro">Um firmware livre e aberto que transforma o FM-1 numa caixa de ruído: quatro laços de
+    realimentação ligados por uma matriz de envios, uma cadeia fixa de doze efeitos dentro de cada laço, tocada com as
+    mãos. Não há oscilador: todo som é a rede mantida na beira em que ela começa a soar.</p>
+    <div class="actions"><a class="button primary" href="play.html">Tocar no navegador <span aria-hidden="true">↗</span></a>
+      <a class="button secondary" href="#device">Instalar no FM-1 <span class="tag">NÃO LANÇADO</span></a></div>
+    <p class="action-note">O emulador roda o próprio núcleo em C do firmware. Não precisa de um FM-1.<br>Teclado, toque ou um controlador MIDI.</p>
+  </div>
+  <div class="object">
+    <div class="object-top"><span>01 — O instrumento, ao vivo</span><span>240 × 240</span></div>
+    <iframe src="play.html" title="Emulador do FAÍSCA" loading="lazy" allow="midi; autoplay"></iframe>
+    <div class="object-bottom"><span>A própria tela do núcleo, desenhada como a unidade a desenha</span><span>Power, depois um pad branco</span></div>
+  </div>
+</section>
+<div class="spec-strip"><div class="wrap"><span>QUATRO LAÇOS</span><span>DOZE EFEITOS</span><span>SEM OSCILADOR</span><span>MIDI</span><span>GPL-3.0</span></div></div>
+
+<section class="section wrap" id="comecar">
+  <div class="section-heading"><p class="eyebrow">02 — Comece aqui</p><h2>Toque.<br>Aprenda. Instale.</h2>
+    <p>Três passos, todos no navegador. Experimente antes de mexer na sua unidade.</p></div>
+  <div class="stories">
+    <article><span class="num">01 / Tocar</span><h3>No navegador.</h3>
+      <p>O emulador é o núcleo do firmware compilado para WebAssembly. Teclado do computador, toque ou um controlador
+      MIDI, com um painel próprio para portas, canal e MIDI learn.</p>
+      <a class="text-link" href="play.html">Abrir o emulador <span aria-hidden="true">↗</span></a></article>
+    <article><span class="num">02 / Aprender</span><h3>Cinco regras, um mapa.</h3>
+      <p>Cinco regras cobrem o instrumento inteiro. O mapa do manual mostra o que cada controle faz sozinho, segurado e
+      em combinação; a folha de consulta cabe numa página.</p>
+      <a class="text-link" href="manual.html">Ler o manual <span aria-hidden="true">↗</span></a>
+      <a class="text-link" href="cheatsheet.html">Folha de consulta <span aria-hidden="true">↗</span></a></article>
+    <article><span class="num">03 / Instalar</span><h3>Ainda não lançado.</h3>
+      <p>O firmware do aparelho está sendo construído e testado por etapas, cada uma conferida no aparelho antes da
+      seguinte. Nada é oferecido para instalar até ele ficar pronto. Leia antes os riscos e os caminhos de volta.</p>
+      <a class="text-link off" href="#device">Estado e riscos <span aria-hidden="true">↓</span></a></article>
+  </div>
+  <p class="action-note">Você precisa de um navegador recente para tocar; Chrome ou Edge para MIDI. Para o aparelho,
+  quando houver versão: Chrome ou Edge num computador e um cabo USB que passe dados.</p>
+</section>
+
+<section class="section wrap" id="som">
+  <div class="section-heading"><p class="eyebrow">03 — O som</p><h2>Uma cadeia.<br>Sempre a mesma.</h2>
+    <p>Cada um dos quatro laços passa pela mesma cadeia fixa, nesta ordem, e grava o resultado na sua linha de atraso,
+    que alimenta o laço de novo um período depois. O quarto knob de todo efeito é o MIX; no zero, o efeito não está no
+    caminho.</p></div>
+  <ol class="chain" aria-label="A cadeia dentro de cada laço">
+    <li class="ext"><span>RETORNO + MATRIZ + KICK + HISS</span></li><li><span>DRIVE</span></li><li><span>BANDA · MID FOCUS</span></li>
+    <li><span>FUZZ</span></li><li><span>BLAST</span></li><li><span>FOLD</span></li><li><span>WRAP</span></li><li><span>RECTIFY</span></li><li><span>DIVIDE</span></li>
+    <li><span>RING</span></li><li><span>STARVE</span></li><li><span>SHIFT</span></li><li><span>ECHO</span></li><li><span>PUMP</span></li><li><span>SWEEP</span></li>
+    <li><span>ATRASO DO LAÇO · PITCH SCREAM</span></li>
+  </ol>
+  <ol class="chain" aria-label="Depois da rede">
+    <li class="ext"><span>LAÇOS 1+3 ESQUERDA · 2+4 DIREITA</span></li><li><span>GATE</span></li><li><span>DELAY</span></li><li><span>REVERB</span></li><li><span>LEVEL</span></li><li><span>LIMITADOR</span></li>
+  </ol>
+  <div class="two">
+    <div class="prose"><p>Os laços se afinam em parciais do MID, de 20 Hz a 10 kHz. GAIN define quanto cada laço
+    devolve: abaixo da unidade os laços ressoam quando golpeados e somem; acima dela cantam sozinhos, e a saturação do
+    pré os segura ali. CROSS escala a matriz 4 × 4 de envios com sinal entre os laços; SCREAM deixa a saída curvar os
+    tempos de atraso dos próprios laços. Um limitador que não se desliga mantém a saída em −3 dBFS ou abaixo. A
+    <a href="theory.html">teoria</a> explica a física.</p></div>
+    <div class="table-scroll"><table class="data">
+      <thead><tr><th>Efeito</th><th>Knobs</th><th>O que faz</th></tr></thead><tbody>
+      <tr><td>FUZZ</td><td class="m">GAIN TONE BIAS</td><td>Dois estágios de saturação, o segundo assimétrico; até +60 dB.</td></tr>
+      <tr><td>BLAST</td><td class="m">GAIN TONE EMPHASIS</td><td>Um corte duro de trilho a trilho, com os agudos realçados antes.</td></tr>
+      <tr><td>FOLD</td><td class="m">DEPTH BIAS SOFT</td><td>Um dobrador de onda triangular, até +24 dB na dobra.</td></tr>
+      <tr><td>WRAP</td><td class="m">DEPTH BIAS SMOOTH</td><td>O pico que passa da borda volta pelo outro lado.</td></tr>
+      <tr><td>RECTIFY</td><td class="m">HALF BIAS TONE</td><td>Onda completa (a oitava acima) até meia onda.</td></tr>
+      <tr><td>DIVIDE</td><td class="m">OCTAVE WIDTH TONE</td><td>Flip-flops: quadradas uma ou duas oitavas abaixo.</td></tr>
+      <tr><td>RING</td><td class="m">CARRIER FREQ DC</td><td>Modulação em anel pelo laço vizinho ou por uma senoide própria.</td></tr>
+      <tr><td>STARVE</td><td class="m">SAG GATE RECOVER</td><td>Uma fonte fraca: a folga cai, os sinais pequenos morrem.</td></tr>
+      <tr><td>SHIFT</td><td class="m">HZ SPREAD FEEDBACK</td><td>Um deslocador de frequência, ±400 Hz.</td></tr>
+      <tr><td>ECHO</td><td class="m">TIME FEEDBACK WOW</td><td>Um eco curto dentro de cada laço, de 2 a 27 ms.</td></tr>
+      <tr><td>PUMP</td><td class="m">DEPTH ATTACK RELEASE</td><td>Um compressor dentro do laço: abaixa e volta a crescer.</td></tr>
+      <tr><td>SWEEP</td><td class="m">RANGE BASE RESO</td><td>Um passa-banda ressonante movido pelo nível do laço.</td></tr>
+      <tr><td>DELAY</td><td class="m">TIME FEEDBACK TONE</td><td>Depois da rede: pingue-pongue, de 10 a 120 ms.</td></tr>
+      <tr><td>REVERB</td><td class="m">SIZE DAMP WIDTH</td><td>Depois da rede: uma pequena rede clara de quatro linhas.</td></tr>
+    </tbody></table></div>
+  </div>
+</section>
+
+<section class="section wrap" id="regras">
+  <div class="section-heading"><p class="eyebrow">04 — Orientação</p><h2>Cinco regras.<br>Um mapa.</h2>
+    <p>Aprenda uma vez e você conhece o instrumento inteiro. O <a class="inline" href="manual.html"><u>manual</u></a>
+    tem o mapa de cada controle.</p></div>
+  <ol class="rules">
+    <li><span class="num">01</span><b>Três knobs nunca mudam</b>CROSS, SCREAM e GAIN, mais o LEVEL no potenciômetro.</li>
+    <li><span class="num">02</span><b>Um botão, uma seção</b>K1 a K4 tocam a seção acesa: LOOP, CHAN, MATRIX, SHAPE, FX, DELAY, REVERB, MOD. CHAN, MATRIX e FX avançam quando apertados de novo.</li>
+    <li><span class="num">03</span><b>Segurar é uma camada</b>MEMORY e STORE: os dezesseis sons nas teclas brancas. FX: os doze efeitos. LFO: as fontes, e um knob girado ganha profundidade. RIBBON: as teclas viram posições.</li>
+    <li><span class="num">04</span><b>O quarto knob é o MIX</b>Em todo efeito. No zero, o efeito não está no caminho.</li>
+    <li><span class="num">05</span><b>A tela diz o que você tocou</b>Nome e valor, grandes, por um instante; depois as quatro lâmpadas.</li>
+  </ol>
+</section>
+
+<section class="section wrap" id="midi-pt">
+  <div class="section-heading"><p class="eyebrow">05 — MIDI</p><h2>O mesmo mapa<br>em todo lugar.</h2>
+    <p>O mapa mora no núcleo comum, então o emulador e o firmware leem MIDI do mesmo jeito. Canal: qualquer um, ou um de
+    1 a 16. Note-on com velocidade 0 vale como note-off.</p></div>
+  <div class="two">
+    <div class="table-scroll"><table class="data"><thead><tr><th>Mensagem</th><th>Controle</th></tr></thead><tbody>
+      <tr><td>NOTA 53–79</td><td>Os 27 pads, de F3 a G5 (C4 = 60)</td></tr>
+      <tr><td>NOTA 36–49</td><td>Os 14 botões: MOTION, RIBBON, LOOP, CHAN, MATRIX, SHAPE, MEMORY, LFO, FX, DELAY, REVERB, MOD, DRONE, STORE</td></tr>
+      <tr><td>CC 20–23</td><td>K1–K4, da seção em uso (absoluto)</td></tr>
+      <tr><td>CC 24 · 25 · 26</td><td>CROSS · SCREAM · GAIN</td></tr>
+      <tr><td>CC 7</td><td>LEVEL, até o potenciômetro ser mexido</td></tr>
+      <tr><td>CC 120 · 123</td><td>Solta tudo o que o MIDI segura</td></tr>
+    </tbody></table></div>
+    <div class="prose"><p>No emulador, o painel MIDI embaixo do instrumento escolhe as portas de entrada e saída e o
+    canal, e guarda os vínculos feitos pelo MIDI learn (Alt+clique num controle, depois mexa num controle MIDI):
+    limpe, exporte e importe em JSON. A saída manda os knobs como CC e as luzes como notas, no mesmo mapa, para
+    controladores que sabem mostrá-las.</p></div>
+  </div>
+</section>
+
+<section class="section wrap" id="roteiro">
+  <div class="section-heading"><p class="eyebrow">06 — O que vem aí</p><h2>Roteiro</h2>
+    <p>O que está sendo construído e testado agora. As datas dependem dos testes em unidades reais.</p></div>
+  <div class="table-scroll"><table class="data road"><tbody>
+    <tr><td>Firmware do aparelho</td><td>Construído e testado por etapas no aparelho: a tela e o silêncio, os controles, o motor parado, o render completo.</td><td><span class="state now">EM ANDAMENTO</span></td></tr>
+    <tr><td>A tela</td><td>Legibilidade de longe, animação, vistas do som: LOOPS, SCOPE, WAVES, MATRIX.</td><td><span class="state now">EM ANDAMENTO</span></td></tr>
+    <tr><td>Os controles na unidade</td><td>Seções e botões de segurar revistos para as mãos.</td><td><span class="state">EM DESENHO</span></td></tr>
+    <tr><td>MIDI no aparelho</td><td>O mapa do emulador, pela USB e pela entrada MIDI.</td><td><span class="state">PLANEJADO</span></td></tr>
+    <tr><td>Primeira versão</td><td>Uma página de instalação, notas da versão, exatamente o que o firmware grava.</td><td><span class="state">PLANEJADO</span></td></tr>
+    <tr><td>Emulador e documentos</td><td>O emulador com MIDI, dezesseis memórias, o manual, a teoria, esta página, em inglês e português.</td><td><span class="state done">FEITO</span></td></tr>
+  </tbody></table></div>
+</section>
+</div>
+
+<!-- ======================= THE DEVICE (light band) ======================= -->
+<section class="band" id="device"><div class="wrap">
+  <p class="eyebrow"><span data-l="en">07 — The device</span><span data-l="pt">07 — O aparelho</span></p>
+  <h2>FAÍSCA <span class="band-label"><span data-l="en">NOT RELEASED</span><span data-l="pt">NÃO LANÇADO</span></span></h2>
+  <div class="notice">
+    <span data-l="en">DISCLAIMER</span><span data-l="pt">AVISO</span>
+    <p data-l="en">FAÍSCA is unofficial firmware, not made, reviewed or supported by the maker of the FM-1. Installing it
+    replaces the unit's firmware and can leave the unit unable to start. You flash it
+    entirely at your own risk. The software is provided without warranty of any kind (GNU General Public License,
+    sections 15 and 16). Back up everything first, and do not install it on a unit you cannot afford to have out of
+    service while it is recovered. There is no release to install yet; the firmware's base platform may still change,
+    so the exact steps will be published with the first release.</p>
+    <p data-l="pt">O FAÍSCA é um firmware não oficial, que não foi feito, revisado nem tem suporte do fabricante do FM-1.
+    Instalá-lo substitui o firmware da unidade e pode deixá-la sem ligar. A
+    gravação é feita inteiramente por sua conta e risco. O software vem sem garantia de nenhum tipo (Licença Pública
+    Geral GNU, seções 15 e 16). Faça backup de tudo antes e não o instale numa unidade que não possa ficar parada
+    enquanto é recuperada. Ainda não há versão para instalar; a plataforma do firmware ainda pode mudar, então os passos
+    exatos sairão com a primeira versão.</p>
+  </div>
+  <div class="cards">
+    <article class="card"><div class="num"><span data-l="en">01 / The ways back</span><span data-l="pt">01 / Os caminhos de volta</span></div>
+      <h3 data-l="en">Recovery.</h3><h3 data-l="pt">Recuperação.</h3>
+      <p data-l="en">From the mildest to the strongest: the official firmware through the official workbench, the
+      platform's safe mode, the bootloader's recovery menu, and, for a unit that shows nothing, a second unit as
+      helper.</p>
+      <p data-l="pt">Do mais leve ao mais forte: o firmware oficial pelo workbench oficial, o modo seguro da plataforma, o
+      menu de recuperação do bootloader e, para uma unidade que não mostra nada, uma segunda unidade como auxiliar.</p>
+      <p><a href="recovery.html"><span data-l="en">The recovery page</span><span data-l="pt">A página de recuperação</span> ↗</a></p></article>
+    <article class="card"><div class="num"><span data-l="en">02 / The terms</span><span data-l="pt">02 / Os termos</span></div>
+      <h3 data-l="en">Legal.</h3><h3 data-l="pt">Legal.</h3>
+      <p data-l="en">The licences, the absence of warranty in plain words, what an unofficial firmware means, the
+      trademarks, and privacy: no analytics, no cookies, nothing leaves the browser.</p>
+      <p data-l="pt">As licenças, a ausência de garantia em palavras simples, o que quer dizer um firmware não oficial, as
+      marcas e a privacidade: sem análise de uso, sem cookies, nada sai do navegador.</p>
+      <p><a href="legal.html"><span data-l="en">The legal page</span><span data-l="pt">A página legal</span> ↗</a></p></article>
+  </div>
+  <div class="faq" data-l="en">
+    <p class="eyebrow">Before installing</p>
+    <details><summary>Can I go back to the official firmware?</summary><p>Yes, with the official workbench. The <a href="recovery.html">recovery page</a> has every way back, from the mildest to the strongest.</p></details>
+    <details><summary>Which browser do I need?</summary><p>The emulator plays in any recent browser; its MIDI needs Chrome or Edge. Installing on the device needs Chrome or Edge on a computer (Web MIDI and WebUSB), not a phone.</p></details>
+    <details><summary>Will I lose my sounds and projects?</summary><p>Back them up with the official workbench before installing anything. Each release will say exactly which part of the unit's memory FAÍSCA writes and what it leaves untouched.</p></details>
+    <details><summary>The installer does not find my unit.</summary><p>Use a USB cable that carries data, connect the unit directly (not through a hub), switch it on, close other pages or programs that use MIDI, and allow MIDI access when the browser asks.</p></details>
+    <details><summary>Do I need an FM-1 to try it?</summary><p>No. The emulator is the same core and plays in the browser.</p></details>
+  </div>
+  <div class="faq" data-l="pt">
+    <p class="eyebrow">Antes de instalar</p>
+    <details><summary>Posso voltar ao firmware oficial?</summary><p>Sim, pelo workbench oficial. A <a href="recovery.html">página de recuperação</a> tem todos os caminhos de volta, do mais leve ao mais forte.</p></details>
+    <details><summary>Qual navegador eu preciso?</summary><p>O emulador toca em qualquer navegador recente; o MIDI dele pede Chrome ou Edge. Instalar no aparelho pede Chrome ou Edge num computador (Web MIDI e WebUSB), não no celular.</p></details>
+    <details><summary>Vou perder meus sons e projetos?</summary><p>Faça o backup pelo workbench oficial antes de instalar qualquer coisa. Cada versão dirá exatamente que parte da memória da unidade o FAÍSCA grava e o que deixa intacto.</p></details>
+    <details><summary>O instalador não encontra a minha unidade.</summary><p>Use um cabo USB que passe dados, ligue a unidade direto (sem hub), deixe-a ligada, feche outras páginas ou programas que usem MIDI e permita o acesso MIDI quando o navegador pedir.</p></details>
+    <details><summary>Preciso de um FM-1 para experimentar?</summary><p>Não. O emulador é o mesmo núcleo e toca no navegador.</p></details>
+  </div>
+</div></section>
+
+<!-- ======================= SOURCE, HISTORY ======================= -->
+<section class="section wrap two" id="source">
+  <div>
+    <p class="eyebrow"><span data-l="en">08 — Free software</span><span data-l="pt">08 — Software livre</span></p>
+    <h2 data-l="en">Open code.<br>Open licences.</h2><h2 data-l="pt">Código aberto.<br>Licenças abertas.</h2>
+    <div class="prose" data-l="en"><p>The core is portable C11 with no library and no allocation; the emulator is that
+    core compiled to WebAssembly, the firmware places the same core inside the unit's own platform. FAÍSCA is free
+    software under the GNU General Public License, version 3 (GPL-3.0-only). The firmware is built on the FM-1's open
+    application and links the unit's binary SDK under that application's linking exception; every firmware
+    distribution carries the license, the exception and the notices of each component it contains.</p>
+    <p>Design, sound and direction: Mario Baril. Built on the open application and SDK the FM-1's maker publishes.
+    Recovery: m-unbricker. Type: Barlow Condensed, DM Sans and IBM Plex Mono, under the SIL Open Font License.</p></div>
+    <div class="prose" data-l="pt"><p>O núcleo é C11 portátil, sem biblioteca e sem alocação; o emulador é esse
+    núcleo compilado para WebAssembly, o firmware põe o mesmo núcleo dentro da plataforma da própria unidade. O FAÍSCA é
+    software livre sob a Licença Pública Geral GNU, versão 3 (GPL-3.0-only). O firmware é construído sobre a aplicação
+    aberta do FM-1 e liga o SDK binário da unidade sob a exceção de ligação dessa aplicação; toda distribuição do
+    firmware leva a licença, a exceção e os avisos de cada componente que contém.</p>
+    <p>Desenho, som e direção: Mario Baril. Construído sobre a aplicação aberta e o SDK que o fabricante do FM-1
+    publica. Recuperação: m-unbricker. Tipos: Barlow Condensed, DM Sans e IBM Plex Mono, sob a SIL Open Font License.</p></div>
+  </div>
+  <div class="links">
+    <a href="https://github.com/mbbaril/faisca"><span data-l="en">The repository</span><span data-l="pt">O repositório</span> <span aria-hidden="true">↗</span></a>
+    <a href="https://www.gnu.org/licenses/gpl-3.0.html">GPL-3.0 <span aria-hidden="true">↗</span></a>
+    <a href="theory.html"><span data-l="en">The theory and its references</span><span data-l="pt">A teoria e as referências</span> <span aria-hidden="true">↗</span></a>
+    <a href="https://github.com/jvitkauskas/m-unbricker">m-unbricker <span aria-hidden="true">↗</span></a>
+    <a href="fonts/OFL-DMSans.txt"><span data-l="en">Font licences</span><span data-l="pt">Licenças das fontes</span> <span aria-hidden="true">↗</span></a>
+  </div>
+</section>
+
+<section class="section wrap" id="history">
+  <div class="section-heading"><p class="eyebrow"><span data-l="en">09 — History</span><span data-l="pt">09 — Histórico</span></p>
+    <h2 data-l="en">Changelog</h2><h2 data-l="pt">Mudanças</h2><p></p></div>
+  <ul class="log" data-l="en">
+    <li><time>2026-11-22</time><span>Sixteen factory memories, one per white key, each singing by itself under DRONE. Pages in the house style; the interactive manual, the cheat sheet; the emulator's MIDI panel, F1–F8 for the sections, a readable phone layout.</span></li>
+    <li><time>2026-11-22</time><span>The fixed structure: one chain of twelve effects with four knobs each, DELAY and REVERB, eight section buttons, memories on the keys, MOD with eight assignments, MOTION and MORPH. MID from 20 Hz to 10 kHz.</span></li>
+    <li><time>2026-11-22</time><span>Measured knob curves; the MIDI map in the core; SETUP (MIDI channel, brightness).</span></li>
+    <li><time>2026-11-22</time><span>First version: the loop network, the screen, the emulator.</span></li>
+  </ul>
+  <ul class="log" data-l="pt">
+    <li><time>2026-11-22</time><span>Dezesseis memórias de fábrica, uma por tecla branca, cada uma cantando sozinha com o DRONE. Páginas no padrão da casa; o manual interativo, a folha de consulta; o painel MIDI do emulador, F1–F8 para as seções, um layout de celular legível.</span></li>
+    <li><time>2026-11-22</time><span>A estrutura fixa: uma cadeia de doze efeitos com quatro knobs cada, DELAY e REVERB, oito botões de seção, memórias nas teclas, MOD com oito atribuições, MOTION e MORPH. MID de 20 Hz a 10 kHz.</span></li>
+    <li><time>2026-11-22</time><span>Curvas medidas dos knobs; o mapa MIDI no núcleo; SETUP (canal MIDI, brilho).</span></li>
+    <li><time>2026-11-22</time><span>Primeira versão: a rede de laços, a tela, o emulador.</span></li>
+  </ul>
+</section>
+</main>
+
+<footer class="footer wrap">
+  <a href="https://usina.ruido.art.br" class="brand">ruído<span>INSTRUMENTOS</span></a>
+  <p data-l="en">FAÍSCA / A NOISEBOX FOR THE HANDS.<br>FM-1 is a trademark of its manufacturer. FAÍSCA is not affiliated with it or endorsed by it.</p>
+  <p data-l="pt">FAÍSCA / UMA CAIXA DE RUÍDO PARA AS MÃOS.<br>FM-1 é marca do seu fabricante. O FAÍSCA não é afiliado a ele nem endossado por ele.</p>
+  <span><a href="legal.html">LEGAL</a> · <a href="recovery.html"><span data-l="en">RECOVERY</span><span data-l="pt">RECUPERAÇÃO</span></a><br>FAÍSCA / RUÍDO · GPL-3.0</span>
+</footer>
+<script src="site.js"></script>
+</body>
+</html>
