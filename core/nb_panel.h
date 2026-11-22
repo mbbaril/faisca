@@ -9,14 +9,15 @@
  *             HOME FX (again: the next effect; held + white key 1..12: that effect), SAVE DELAY, ARP REVERB, SEQ MOD
  *   buttons   OCT- MOTION (held: the knobs' gestures recorded in a loop; a tap clears),
  *             OCT+ RIBBON (held: the keys set the last knob touched),
- *             EDIT MEMORY (held + white key 1..16: recall; + RIBBON: where a MORPH goes),
+ *             EDIT (free for now: a touch says the memory),
  *             GLO MOD (held + turn a knob: its modulation; + white key 1..4: the source; two taps: clear),
  *             PLAY DRONE (latch), REC STORE (held + white key 1..16: keep the sound there; a tap: SETUP)
  *   pages     LOOP (MID FOCUS DRIVE HISS), LOOP 1..4 (GAIN PITCH MID LEVEL), INTO 1..4 (FROM 1..4),
  *             SHAPE (TOPOLOGY PARTIALS), the twelve effects (four knobs each, the fourth MIX), DELAY, REVERB,
  *             MOD (LFO 1, LFO 2, RANDOM rates, SMOOTH), SETUP (MIDI CH, BRIGHT)
- *   keys      white: KICK pads (left dark and long, right bright and short; which loops they strike)
- *             black: GATE pads: CUT, OPEN, RETURN, CHOP 32/16/8/4, SCATTER 4/8/16/32 */
+ *   keys      white: the 16 memories, direct (a tap recalls; held, the sound MORPHs toward it while held)
+ *             black: NODE 1..4 (each strikes its loop; held, the return stays open), ALL, CUT, CHOP, SCATTER (held +
+ *             K1: their rate), RETURN, OPEN, VIEW (docs/CONTROLES.md R3.8: no key does what another does) */
 #ifndef NB_PANEL_H
 #define NB_PANEL_H
 #include <stdint.h>
@@ -39,6 +40,9 @@ enum { NB_SRC_LFO1, NB_SRC_LFO2, NB_SRC_RANDOM, NB_SRC_FOLLOW, NB_NSRC };
 #define NB_T_HISS 38
 #define NB_T_FX 39
 #define NB_NTARGET (NB_T_FX + NB_NFX * 4)
+#define NB_LED_DIM 1
+#define NB_LED_ON 2
+#define NB_FX_BUDGET 85.f       /* the effects in may take the render up to this % of the device's budget (FX FULL) */
 #define NB_NMOD 8               /* modulations per sound */
 #define NB_LANES 6
 #define NB_LANE_PTS 40
@@ -55,6 +59,7 @@ typedef struct {
     uint16_t pot;               /* 0..1023 */
     uint32_t ms;                /* the control clock, milliseconds (wraps) */
     float follow;               /* the network's output level now, 0..1 (FOLLOW) */
+    float loud[NB_CH];          /* each loop's level in the network (nb_view.loud): the node keys' lights; 0 unknown */
 } nb_controls;
 
 /* what the screen says big for a moment after a touch */
@@ -72,7 +77,43 @@ typedef struct {
     float bar;                  /* 0..1, or < 0 for none */
     char title[16], value[16];
     char lines[4][12];          /* a page: the four knobs */
+    /* the frame around everything (docs/TELA.md 5, 6): filled at every update */
+    char page[12];              /* the page K1..K4 play now */
+    char foot[16];              /* the memory's name, or the held pad's, or the view layer's action */
+    uint8_t foot_hot;           /* foot holds a pad's or an action's words (else the footer meters the output) */
+    uint8_t struck;             /* bit c: a held pad strikes loop c (its number lit) */
+    uint8_t gating;             /* a gate pad held (CUT, RETURN, CHOP, SCATTER): the loops' numbers red while it acts */
+    int8_t morph_to;            /* where a MORPH goes, the memory's index; -1 */
+    uint8_t any_mod;            /* some modulation is on */
+    int8_t turning;             /* 0..3: the K being turned now (its gauge lime); -1 */
+    uint8_t kkind[4];           /* NB_KIND_* of K1..K4 */
+    float kval[4];              /* their positions, 0..1 */
+    float kmod[4];              /* the position as modulated now, or -1 */
+    char words[4][12];          /* a step knob's value as a word (TOPOLOGY RING) */
+    char knames[4][12], ktext[4][12];   /* K1..K4's names and values as the sound has them (220 HZ, +48 %) */
+    uint16_t fx_in;             /* bit f: effect f in the chain (its MIX above 0) */
+    uint16_t fx_cut;            /* bit f: in the sound, left out by the CPU budget (said FX LEFT OUT, never silent) */
+    int8_t strip_n, strip_cur;  /* the page's or the card's strip of cells (effects, loops, memories, sources) */
+    uint8_t strip_hot;          /* the current cell red (STORE) */
+    uint8_t rows_text;          /* a page card whose rows are plain text (PERF), not knobs */
+    int8_t focus_loop, into;    /* the loop in focus (LOOP n, INTO n, LISTEN n, PULL n, ISOLATE n); INTO n; -1 */
+    char modline[16];           /* a knob's modulation: its source */
+    float mod_lo, mod_hi, mod_now;   /* its range on the bar and where it is now; mod_now < 0: none */
+    /* the stage's views (docs/TELA.md 13) and the keys that play them */
+    uint8_t view;               /* NB_VIEW_* */
+    uint8_t layer;              /* the view key held: the keys play the view */
+    uint8_t view_flash;         /* the view just changed: its name where the page goes */
+    int8_t listen, pull, iso;   /* -1, or the loop */
+    uint8_t flip, freeze, bypass;
+    int8_t spin;                /* SPIN steps taken, +-: the solid turns 30 degrees a step */
 } nb_hud;
+
+/* the stage's views, in the order a tap steps them; the first is the one after the splash (Mario: the oscilloscope) */
+enum { NB_VIEW_SCOPE, NB_VIEW_LOOPS, NB_VIEW_MATRIX, NB_VIEW_CHAIN, NB_VIEW_WAVES, NB_VIEW_FREQ, NB_VIEW_TETRA, NB_NVIEW };
+/* the view key (until the controls revision moves the layer to GLO): F#5, the last black key. A tap steps the views,
+ * held + K1 steps them too, held + keys plays the view (white 1-4 LISTEN, 5-8 PULL, 9-12 ISOLATE; black 1 FLIP,
+ * 2 FREEZE, 3 BYPASS, 4-5 SPIN), all momentary */
+#define NB_KEY_VIEW 25
 
 /* a sound, in RAM: every position (0..1), its modulations, its motion loop, the two lists */
 typedef struct {
@@ -89,12 +130,14 @@ typedef struct {
     uint8_t lane[NB_LANES][NB_LANE_PTS];  /* positions, 0..255 */
     uint16_t motion_ms;                   /* the loop's length; 0 none */
     uint8_t topology, partials;
+    uint8_t stage[NB_NFX + 1];            /* each effect's stage, then the network's (0 orthodox .. 2 heretic) */
+    uint16_t fx_off;                      /* the effects switched off (bit f): out of the path, their MIX kept */
 } nb_snap;
 
 /* the few settings a dedicated instrument needs (page SETUP) */
 typedef struct {
     uint8_t midi_ch;            /* 0 any channel, 1..16 */
-    uint8_t pad;
+    uint8_t transition;         /* TRANSITION, 0..255: 0..2 s (in an NB09 bank; older ones carried a zero pad here) */
     uint16_t bright;            /* 0..65535: 25..100 % */
 } nb_setup;
 
@@ -108,11 +151,15 @@ typedef struct {
     uint8_t lane[NB_LANES][NB_LANE_PTS];
     uint16_t motion_ms;
     uint8_t topology, partials;
+    uint8_t stage[4];           /* the 15 stages, 2 bits each (effect i at bits 2i of the 30) */
+    uint16_t fx_off;            /* the effects switched off (bit f), their MIX kept */
 } nb_snap_packed;
 
 /* one bank: memories bank * 8 .. + 7, each bank with its own check (a bank that fails it keeps the factory sounds);
  * the setup is bank 0's (bank 1 carries zeros there) */
-#define NB_STORE_MAGIC 0x4e423037u   /* "NB07" */
+#define NB_STORE_MAGIC 0x4e423039u   /* "NB09": with the stages and the effects switched off */
+#define NB_STORE_V8_BYTES 3792u      /* a bank kept with the stages, before the switch ("NB08"): it loads, every effect on */
+#define NB_STORE_V7_BYTES 3760u      /* a bank kept by the build before the stages ("NB07"): it loads, all orthodox */
 typedef struct {
     uint32_t magic;
     uint32_t bank;              /* 0 or 1 */
@@ -128,6 +175,8 @@ typedef struct {
     nb_snap morph_a;            /* where a MORPH starts */
     nb_store store[NB_NBANK];   /* the packed copies the platform keeps, one per bank */
     float setup_bright;         /* SETUP's BRIGHT as a knob position */
+    float setup_transition;     /* SETUP's TRANSITION as a knob position: 0..1 = 0..2 s (the engine's nb_params.transition) */
+    float setup_seen_transition;
     uint8_t setup_midi_ch;
     int snap_index;
     int drone;
@@ -141,10 +190,20 @@ typedef struct {
     float midi_cc_val;
     nb_hud hud;
     int last_gate_key;
+    uint8_t chop_sel, scat_sel;     /* CHOP's crossings (32 16 8 4) and SCATTER's rate (4 8 16 32 a second), by index */
+    int mem_key;                    /* the memory whose white key is held (-1 none), since mem_t0: a tap jumps, held MORPHs */
+    int fxk;                        /* FX held: the effect whose white key is held (-1 none), since fxk_t0; fxk_done: */
+    uint32_t fxk_t0;                /* ... its long press has switched it already */
+    int fxk_done;
+    uint32_t mem_t0;
     int splash;                 /* the name at power-on, until the first update has a clock */
     int hud_held;               /* MEMORY, STORE, FX, RIBBON, MOD held: the message stays */
     int setup_dirty;
+    uint32_t setup_ms;          /* when SETUP was last changed: kept 1.5 s after, so a power-off on the page loses nothing */
+    uint8_t setup_seen_ch;
+    float setup_seen_bright;
     int store_dirty;            /* the banks to save, bit b: store[b] */
+    int fx_full;                /* a MIX refused (over NB_FX_BUDGET): FX FULL said at the next update */
     /* MOD */
     int mod_sel, mod_used;
     uint32_t mod_tap_ms;
@@ -155,18 +214,32 @@ typedef struct {
     int rec, rec_used;
     uint32_t rec_t0, motion_t0;
     uint8_t rec_lane[NB_LANES];  /* lanes written by this recording */
+    /* the views */
+    int view, layer_used, spin;
+    uint32_t view_ms;
+    int8_t listen, pull, iso;
+    uint8_t flip, freeze, bypass;
     /* MORPH */
     int morph_target;
     float level;
     nb_params params;
     nb_touch touch;
-    uint8_t led[NB_NLED];
+    uint8_t led[NB_NLED];       /* 0 off, NB_LED_DIM, NB_LED_ON (the platform's two levels; blinking is the panel's) */
+    uint16_t stored;            /* the memories holding a stored sound (not the factory's): their white keys dim */
+    int edited;                 /* the sound played was changed since its recall or its store: its key breathes */
+    int fx_full_key;            /* the effect FX FULL refused (its key flashes 600 ms from fx_full_ms), -1 none */
+    uint16_t fx_cut, fx_cut_said;   /* the effects the budget leaves out of the sound now; those already said */
+    uint32_t fx_full_ms;
 } nb_panel;
 
 void nb_panel_init(nb_panel *p);
 /* Load one bank of stored sounds (a blob from the platform, sizeof(nb_store) bytes); ignored unless it is that bank
  * and valid (the factory sounds stay). */
 void nb_panel_load(nb_panel *p, int bank, const void *blob, unsigned bytes);
+/* A stage (0 orthodox, 1 heterodox, 2 heretic) for an effect (0..NB_NFX-1) or the network (NB_STAGE_NET): the minimal
+ * hook; where it sits on the panel is docs/CONTROLES.md's to decide. The engine crossfades the change. */
+void nb_panel_set_stage(nb_panel *p, int unit, int stage, uint32_t ms);
+int nb_panel_stage(const nb_panel *p, int unit);
 /* One read of the controls: updates params, touch and the LEDs. */
 void nb_panel_update(nb_panel *p, const nb_controls *c);
 /* One short MIDI message. The default map: notes 53..79 the 27 pads, notes 36..49 the 14 buttons,
@@ -195,6 +268,10 @@ const char *nb_partials_name(int i);
 const char *nb_pad_name(int key);
 int nb_topology_count(void);
 int nb_partials_count(void);
+/* an effect's cost and the network's own, % of the device's render budget (the engine's nb_fx_cost when it has it);
+ * the load of a sound: the network plus its effects in (MIX above 0, not switched off), but `except` */
+float nb_fx_cost(int fx);
+float nb_fx_load(const nb_snap *s, int except);
 /* the knob's position mapped to its physical value (the measured curves) */
 float nb_knob_value(int knob, float pos);
 

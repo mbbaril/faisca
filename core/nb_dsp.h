@@ -8,6 +8,16 @@
 
 #define NB_PI 3.14159265358979f
 
+/* a loop the compiler must not copy out (the render lives in 32 KB of RAM: an unrolled loop over the effects or the
+ * channels would copy every effect's code) */
+#if defined(__clang__)
+#define NB_NOUNROLL _Pragma("clang loop unroll(disable)")
+#elif defined(__GNUC__)
+#define NB_NOUNROLL _Pragma("GCC unroll 1")
+#else
+#define NB_NOUNROLL
+#endif
+
 NB_INLINE float nb_clamp(float x, float lo, float hi) { return x < lo ? lo : x > hi ? hi : x; }
 NB_INLINE float nb_absf(float x) { return x < 0.f ? -x : x; }
 NB_INLINE float nb_lerp(float a, float b, float t) { return a + (b - a) * t; }
@@ -83,6 +93,46 @@ NB_INLINE float nb_noise(uint32_t *s)
     *s = x;
     return (float)(int32_t)x * (1.f / 2147483648.f);
 }
+
+/* floor, exact for |x| < 2^31 (the "+1000" trick loses bits; this does not) */
+NB_INLINE float nb_floor(float x)
+{
+    float f = (float)(int)x;
+    return f - (float)(f > x);         /* no branch */
+}
+
+/* atan for any x, error < 2e-5 (range-reduced to |z| <= 1, then an odd polynomial) */
+NB_INLINE float nb_atan(float x)
+{
+    float a = nb_absf(x), z = a > 1.f ? 1.f / a : a, z2 = z * z;
+    float r = z * (0.99997726f + z2 * (-0.33262347f + z2 * (0.19354346f + z2 * (-0.11643287f + z2 * (0.05265332f + z2 * -0.01172120f)))));
+    if (a > 1.f) r = 1.5707963f - r;
+    return x < 0.f ? -r : r;
+}
+
+/* 1 / sqrt(x) for x > 0, no division: the bit trick and two Newton steps (relative error < 1e-6) */
+NB_INLINE float nb_rsqrt(float x)
+{
+    union { float f; uint32_t u; } v = { x };
+    v.u = 0x5f3759dfu - (v.u >> 1);
+    float y = v.f;
+    y = y * (1.5f - 0.5f * x * y * y);
+    y = y * (1.5f - 0.5f * x * y * y);
+    return y;
+}
+
+/* 1 - e^-y, an RC's factor for a step of y time constants: the series for small y (nb_exp2's ~1e-4 error would make a
+ * slow glide up to twice as fast), exp2 above */
+NB_INLINE float nb_rc(float y)
+{
+    if (y < 0.1f) return y * (1.f - y * (0.5f - y * (1.f / 6.f)));
+    return 1.f - nb_exp2(-y * 1.4427f);
+}
+
+/* the algebraic knee x / sqrt(1 + x^2): the tanh-like curve whose antiderivative, sqrt(1 + x^2), is exact */
+NB_INLINE float nb_sig(float x) { return x * nb_rsqrt(1.f + x * x); }
+/* sqrt(1 + x^2), the knee's antiderivative, without a division */
+NB_INLINE float nb_hyp(float x) { float v = 1.f + x * x; return v * nb_rsqrt(v); }
 
 /* A 17-point table, x in 0..1: the measured knob curves. */
 NB_INLINE float nb_table17(const float *t, float x)

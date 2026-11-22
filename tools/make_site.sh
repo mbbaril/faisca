@@ -9,7 +9,7 @@
 set -e
 cd "$(dirname "$0")/.."
 OUT=build/site
-PAGES="index.html play.html manual.html theory.html cheatsheet.html legal.html recovery.html 404.html"
+PAGES="index.html play.html manual.html theory.html cheatsheet.html labels.html legal.html recovery.html 404.html"
 ASSETS="site.css site.js icon.svg"
 FONTS="BarlowCondensed-Bold.ttf DMSans.ttf IBMPlexMono-Regular.ttf OFL-Barlow.txt OFL-DMSans.txt OFL-IBMPlexMono.txt"
 

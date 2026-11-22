@@ -213,7 +213,7 @@ static void render(int ci, uint32_t seed, int fx, int knob, float value, print_t
 
 /* the change between neighbouring steps of v0 .. v1 in each context, the noise's own share taken off (the chaos
  * of a singing loop: two renders with another noise differ that much without the knob moving). The effects after
- * the network (DELAY, REVERB) do not feed back: the network is the same at every step, nothing to take off. */
+ * the network (FILTER, REVERB) do not feed back: the network is the same at every step, nothing to take off. */
 static void changes(int fx, int knob, float v0, float v1, double d[NCTX][STEPS])
 {
     int post = fx >= NB_NLOOPFX;

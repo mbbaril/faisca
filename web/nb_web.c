@@ -72,6 +72,7 @@ EXPORT(nb_process) int nb_process(int frames)
     samples += (uint64_t)frames;
     ctl.ms = (uint32_t)(samples * 1000u / (uint64_t)fs);
     ctl.follow = view.out;
+    for (int k = 0; k < NB_CH; ++k) ctl.loud[k] = view.loud[k];
     nb_panel_update(&panel, &ctl);
     for (int e = 0; e < 7; ++e) ctl.enc[e] = 0;
     nb_engine_render(&engine, &panel.params, &panel.touch, audio, frames);

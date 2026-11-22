@@ -111,6 +111,8 @@ body{min-height:100vh;min-height:100dvh;display:flex;flex-direction:column;
 .pad b{position:absolute;left:0;right:0;top:-1.5cqw;text-align:center;font:600 .85cqw/1 var(--mono);color:#e9ebea;opacity:.45}
 .pad.down{transform:translate(-50%,.22cqw);box-shadow:inset 0 .3cqw .4cqw #0009}
 .pad.lit i{background:var(--lime);box-shadow:0 0 1cqw #c2f000cc}
+.pad.dim i{background:#c2f00055;box-shadow:none}
+.btn.dim{color:#a9c23c;box-shadow:inset 0 0 0 .14cqw #c2f00055,0 .25cqw 0 #0d0f10}
 .pad.lit span{color:var(--lime);opacity:1}
 .tall .pad span{font-size:2.5cqw;bottom:4%}
 .tall .pad b,.tall .btn i.kc{display:none}
@@ -158,6 +160,17 @@ td.x{width:1%;padding-right:0}
 td.x button{padding:4px 8px}
 .empty td{color:var(--faint)}
 kbd{font:500 12px/1 var(--mono);color:var(--ink);border:1px solid #333a37;border-bottom-width:2px;border-radius:3px;padding:2px 5px;white-space:nowrap}
+/* phones in landscape: the page's head becomes a narrow column beside the instrument, which takes the height */
+@media (orientation:landscape) and (max-height:560px){
+  body{flex-direction:row;flex-wrap:wrap;align-items:flex-start}
+  .pagehead{width:118px;max-width:118px;flex-direction:column;align-items:flex-start;justify-content:flex-start;margin:0 14px 0 0;
+    min-height:0;padding:max(10px,env(safe-area-inset-top)) 0 10px;border-bottom:0;border-right:1px solid var(--line);
+    position:sticky;top:0;gap:14px}
+  .pagehead nav{flex-direction:column;gap:9px}
+  .stage{flex:1;min-width:0;padding-top:max(8px,env(safe-area-inset-top))}
+  .foot{flex-basis:100%}
+}
+.dev{margin-inline:auto}
 @media (max-width:480px){.panel{font-size:12px}table{font-size:12px}select{min-width:0;width:100%}.ports label{flex:1 1 40%}}
 </style>
 </head>
@@ -212,7 +225,7 @@ kbd{font:500 12px/1 var(--mono);color:var(--ink);border:1px solid #333a37;border
         <tr><td><kbd>Q</kbd> <kbd>2</kbd> <kbd>W</kbd> &hellip; <kbd>O</kbd></td><td>PADS 13&ndash;27</td></tr>
         <tr><td><kbd>SPACE</kbd></td><td>DRONE</td></tr>
         <tr><td><kbd>SHIFT</kbd></td><td>RIBBON (HELD)</td></tr>
-        <tr><td><kbd>TAB</kbd></td><td>MEMORY (HELD)</td></tr>
+        <tr><td><kbd>TAB</kbd></td><td>EDIT (FREE)</td></tr>
         <tr><td><kbd>ENTER</kbd></td><td>STORE (HELD)</td></tr>
         <tr><td><kbd>CAPS</kbd></td><td>FX (HELD)</td></tr>
         <tr><td><kbd>\</kbd></td><td>LFO (HELD)</td></tr>
@@ -245,8 +258,7 @@ const FXN=["FUZZ","BLAST","FOLD","WRAP","RECTIFY","DIVIDE","RING","STARVE","SHIF
 const SOURCES=["LFO 1","LFO 2","RANDOM","FOLLOW"];
 const WHITES=[0,2,4,6,7,9,11,12,14,16,18,19,21,23,24,26];
 const BLACKS=[1,3,5,8,10,13,15,17,20,22,25];
-const KICK_LBL=["1","2","3","4","1","2","3","4","1+2","3+4","1+3","2+4","ALL","ALL","ALL","ALL"];
-const GATE_LBL=["CUT","OPEN","RETURN","CHOP 32","CHOP 16","CHOP 8","CHOP 4","SCAT 4","SCAT 8","SCAT 16","SCAT 32"];
+const GATE_LBL=["N1","N2","N3","N4","ALL","CUT","CHOP","SCATTER","RETURN","OPEN","VIEW"];   /* docs/CONTROLES.md R3.8 */
 // the buttons by index (MIDI notes 36..49); 7 assigns a modulation, 11 is the MOD section (the sources' rates)
 const BTN_NAME=["MOTION","RIBBON","LOOP","CHAN","MATRIX","SHAPE","MEMORY","LFO","FX","DELAY","REVERB","MOD","DRONE","STORE"];
 const BTN_MAP=["MOTION","RIBBON","LOOP","CHAN","MATRIX","SHAPE","MEMORY","LFO","FX","DELAY","REVERB","MOD","DRONE","STORE"];
@@ -257,7 +269,7 @@ const ENC_CC={2:20,3:21,4:22,5:23,0:24,1:25,6:26};
 const CC_NAME={7:"LEVEL",20:"K1",21:"K2",22:"K3",23:"K4",24:"CROSS",25:"SCREAM",26:"GAIN"};
 const NOTE_NAMES=["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"];
 const noteName=n=>NOTE_NAMES[n%12]+(Math.floor(n/12)-1);
-const padName=k=>{const wi=WHITES.indexOf(k);return wi>=0?"KICK "+KICK_LBL[wi]:GATE_LBL[BLACKS.indexOf(k)];};
+const padName=k=>{const wi=WHITES.indexOf(k);return wi>=0?"MEMORY "+(wi+1):GATE_LBL[BLACKS.indexOf(k)];};
 
 // ---- the plate, in its own units: the device (1000 x 572), and folded for a phone held upright ----
 function pillRow(L,k0,k1,x,y,w,h){
@@ -449,26 +461,25 @@ function draw(){
   }
   const lbl=b=>{
     if(b===0)return["MOTION",st[8]===2?"REC":st[8]===1?"LOOP":""];
-    if(b===1)return["RIBBON",st[9]>=0?"> "+SNAP[st[9]]:""];
+    if(b===1)return["RIBBON",st[9]>=0?"> "+(st[9]+1):""];
     const si=SECTION_BTN.indexOf(b);
     if(si>=0){const cur=st[2]===si&&st[5]!==PG_SETUP;return[SECTIONS[si],cur&&(si===1||si===2||si===4)?S.page:""];}
-    if(b===6)return["MEMORY",SNAP[st[0]]||""];if(b===7)return["LFO",SOURCES[st[7]]||""];
+    if(b===6)return["EDIT",String(st[0]+1)];if(b===7)return["LFO",SOURCES[st[7]]||""];
     if(b===12)return["DRONE",""];if(b===13)return["STORE",st[5]===PG_SETUP?"SETUP":""];return["",""];};
   els.btn.forEach((e,b)=>{if(!e)return;const [t,s]=lbl(b);const h=(BTNCAP[b]?"<i class=kc>"+BTNCAP[b]+"</i>":"")+"<b>"+t+"</b>"+(s?"<small>"+s+"</small>":"");
-    if(e._h!==h){e.innerHTML=h;e._h=h;}e.classList.toggle("lit",!!L[b]);e.classList.toggle("down",!!((buttons>>b)&1));e.classList.toggle("latched",latched.has(b));
+    if(e._h!==h){e.innerHTML=h;e._h=h;}e.classList.toggle("lit",L[b]>=2);e.classList.toggle("dim",L[b]===1);e.classList.toggle("down",!!((buttons>>b)&1));e.classList.toggle("latched",latched.has(b));
     e.setAttribute("aria-label",(t+" "+s).trim());e.setAttribute("aria-pressed",(buttons>>b)&1?"true":"false");});
-  const layer=remembering||fxing||modding||ribbon;
+  const layer=fxing||modding||ribbon;
   els.pad.forEach((e,k)=>{if(!e)return;
     const wi=WHITES.indexOf(k),bi=BLACKS.indexOf(k);
-    let t=wi>=0?KICK_LBL[wi]:GATE_LBL[bi];
-    if(remembering)t=wi>=0&&wi<SNAP.length?SNAP[wi]:"";
-    else if(fxing)t=wi>=0&&wi<12?FXN[wi]:"";
+    let t=wi>=0?String(wi+1):GATE_LBL[bi];
+    if(fxing)t=wi>=0&&wi<12?FXN[wi]:"";
     else if(modding)t=wi>=0&&wi<SOURCES.length?SOURCES[wi]:"";
     else if(ribbon)t="";
     if(e.span.textContent!==t)e.span.textContent=t;
-    e.setAttribute("aria-label",(wi>=0&&!layer?"KICK ":"")+t);
-    const down=!!((keys>>k)&1)||(!layer&&!!L[14+k]);
-    e.classList.toggle("lit",!!L[14+k]||down);e.classList.toggle("down",down);});
+    e.setAttribute("aria-label",(wi>=0&&!layer?"MEMORY ":"")+t);
+    const down=!!((keys>>k)&1);
+    e.classList.toggle("lit",L[14+k]>=2||down);e.classList.toggle("dim",L[14+k]===1&&!down);e.classList.toggle("down",down);});
 }
 
 // ---- MIDI: the core's own map (notes 53..79 pads, 36..49 buttons, CC 20..26 knobs, CC 7 LEVEL), learn, ports ----
@@ -633,8 +644,19 @@ if(/[?&]touches/.test(location.search)){
 setupMidiPanel();
 toggle(document.getElementById("tg-midi"),"midi",midiStart);
 toggle(document.getElementById("tg-keys"),"keys");
-let tall=isTall();build();
-addEventListener("resize",()=>{const t=isTall();if(t!==tall){tall=t;build();}});
+/* the whole instrument in the visible viewport: its width the smaller of the page's and the height left (dynamic
+   viewport units, so a phone's browser bars do not crop it), keeping its proportions */
+function fit(){
+  const dev=document.getElementById("dev");if(!dev)return;
+  const L=dev.classList.contains("tall")?{W:1000,H:1860}:{W:1000,H:572};
+  const side=matchMedia("(orientation:landscape) and (max-height:560px)").matches;
+  const head=document.querySelector(".pagehead");
+  const chrome=side?16:(head?head.getBoundingClientRect().height+24:110)+12;
+  dev.style.maxWidth="calc((100dvh - "+Math.round(chrome)+"px) * "+(L.W/L.H).toFixed(4)+")";
+}
+let tall=isTall();build();fit();
+addEventListener("resize",()=>{const t=isTall();if(t!==tall){tall=t;build();}fit();});
+if(window.visualViewport)visualViewport.addEventListener("resize",fit);
 </script>
 </body>
 </html>

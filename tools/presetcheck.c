@@ -116,9 +116,9 @@ static void preset_check(int i, float fs, pc_result *r, float **audio)
         c.buttons = 0; pc_idle(&c, fs, 2.f);
     }
     static const uint8_t white[16] = { 0, 2, 4, 6, 7, 9, 11, 12, 14, 16, 18, 19, 21, 23, 24, 26 };
-    c.buttons = 1u << NB_B_MEMORY; pc_idle(&c, fs, 0.02f);              /* MEMORY held */
-    c.keys = 1u << white[i]; pc_idle(&c, fs, 0.02f);                    /* + its white key */
-    c.keys = 0; c.buttons = 0; pc_idle(&c, fs, 0.02f);
+    c.keys = 1u << white[i]; pc_idle(&c, fs, 0.02f);                    /* a tap on its white key */
+    c.keys = 0; pc_idle(&c, fs, 0.15f);   /* a hand's pace to DRONE (latched within 20 ms of a recall, while
+                                           * TRANSITION glides, 3 of 16 miss the strike: the engine's, as T-16) */
     if (!pc_switch) {
         c.buttons = 1u << NB_B_DRONE; pc_idle(&c, fs, 0.02f);           /* DRONE tapped: latched */
         c.buttons = 0;

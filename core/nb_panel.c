@@ -44,19 +44,28 @@ static const char *const fx_names[NB_NFX] = {
     "FUZZ", "BLAST", "FOLD", "WRAP", "RECTIFY", "DIVIDE", "RING", "STARVE", "SHIFT", "ECHO", "PUMP", "SWEEP",
     "DELAY", "REVERB"
 };
-static const char *const fx_knobs[NB_NFX][4] = {
-    { "GAIN", "TONE", "BIAS", "MIX" },        { "GAIN", "TONE", "EMPHASIS", "MIX" },
-    { "DEPTH", "BIAS", "SOFT", "MIX" },        { "DEPTH", "BIAS", "SMOOTH", "MIX" },
-    { "HALF", "BIAS", "TONE", "MIX" },         { "OCTAVE", "WIDTH", "TONE", "MIX" },
-    { "CARRIER", "FREQ", "DC", "MIX" },        { "SAG", "GATE", "RECOVER", "MIX" },
-    { "HZ", "SPREAD", "FEEDBACK", "MIX" },     { "TIME", "FEEDBACK", "WOW", "MIX" },
-    { "DEPTH", "ATTACK", "RELEASE", "MIX" },   { "RANGE", "BASE", "RESO", "MIX" },
-    { "TIME", "FEEDBACK", "TONE", "MIX" },     { "SIZE", "DAMP", "WIDTH", "MIX" },
+/* each effect's knobs in each stage (docs/ESTAGIOS.md): the mechanism changes, the fourth is always MIX */
+static const char *const fx_knobs[NB_NFX][3][3] = {
+    { { "GAIN", "TONE", "BIAS" },      { "GAIN", "TONE", "CHARGE" },     { "WINDOW", "TONE", "SKEW" } },
+    { { "GAIN", "TONE", "EMPHASIS" },  { "GAIN", "SLEW", "RAILS" },      { "GAIN", "RANGE", "STICK" } },
+    { { "DEPTH", "BIAS", "SOFT" },     { "FOLDS", "BIAS", "LOCK" },      { "SPAN", "RATE", "SKEW" } },
+    { { "DEPTH", "BIAS", "SMOOTH" },   { "DEPTH", "SPARK", "COLOR" },    { "BITS", "SOURCE", "TONE" } },
+    { { "HALF", "BIAS", "TONE" },      { "OCTAVES", "BIAS", "TONE" },    { "COUNT", "PHASE", "TONE" } },
+    { { "OCTAVE", "WIDTH", "TONE" },   { "DIVISOR", "SECOND", "TONE" },  { "STEPS", "HITS", "SCALE" } },
+    { { "FREQ", "DC", "SHAPE" },       { "SOURCE", "RATIO", "DC" },      { "ORDER", "HOLD", "TONE" } },
+    { { "SAG", "GATE", "RECOVER" },    { "SAG", "SHARE", "RECOVER" },    { "DEPTH", "IMPEDANCE", "RECOVER" } },
+    { { "HZ", "SPREAD", "FEEDBACK" },  { "RATIO", "SPREAD", "FEEDBACK" }, { "AXIS", "SPREAD", "FEEDBACK" } },
+    { { "TIME", "FEEDBACK", "WOW" },   { "PERIODS", "FEEDBACK", "DAMP" }, { "WINDOW", "FEEDBACK", "BLEND" } },
+    { { "DEPTH", "ATTACK", "RELEASE" }, { "DEPTH", "SOURCE", "RELEASE" }, { "INVERT", "ATTACK", "RELEASE" } },
+    { { "RANGE", "BASE", "RESO" },     { "RANGE", "HARMONIC", "RESO" },  { "FM", "BASE", "RESO" } },
+    { { "TIME", "FEEDBACK", "TONE" },  { "PERIODS", "FEEDBACK", "TONE" }, { "TIME", "RETURN", "TONE" } },
+    { { "SIZE", "DAMP", "WIDTH" },     { "SIZE", "TUNE", "DAMP" },       { "SIZE", "SWALLOW", "DAMP" } },
 };
+static const char *const stage_marks[3] = { "", " II", " III" };
 /* where each effect's knobs rest (the MIX at 0: the effect is not there) */
 static const float fx_rest[NB_NFX][4] = {
     { .5f, .6f, .3f, 0 }, { .5f, .5f, .5f, 0 }, { .4f, .5f, .2f, 0 }, { .4f, .5f, .2f, 0 },
-    { 0, .1f, .6f, 0 },   { 0, 0, .5f, 0 },     { 0, .4f, 0, 0 },     { .5f, .3f, .4f, 0 },
+    { 0, .1f, .6f, 0 },   { 0, 0, .5f, 0 },     { .4f, 0, 0, 0 },     { .5f, .3f, .4f, 0 },
     { .62f, .3f, .2f, 0 },{ .4f, .4f, .2f, 0 }, { .5f, .2f, .4f, 0 }, { .5f, .4f, .5f, 0 },
     { .35f, .4f, .4f, 0 },{ .55f, .4f, .6f, 0 },
 };
@@ -67,7 +76,9 @@ static const char *const page_names[NB_NPAGE] = {
     "DELAY", "REVERB", "MOD", "SETUP"
 };
 
-/* ---- the memories: oblique names; each one sings by itself once DRONE is latched (tools/presetcheck) ---- */
+/* ---- the memories: oblique names; each one sings by itself once DRONE is latched (tools/presetcheck). The batch
+ * spans the three stages (docs/ESTAGIOS.md 7): orthodox TETHER SILL HUSK NEEDLE KITE; heterodox EMBER CHALK SMOKE
+ * MOTH GRIST TIDE; heretic DEW DROUGHT MILL GRAVEL LANTERN ---- */
 static const char *const snap_names[NB_NSNAP] = {
     "TETHER", "EMBER", "CHALK", "DEW", "SMOKE", "DROUGHT", "SILL", "MILL",
     "HUSK", "NEEDLE", "MOTH", "GRAVEL", "KITE", "GRIST", "TIDE", "LANTERN"
@@ -80,7 +91,9 @@ typedef struct {
     float rate[4];                                            /* LFO 1, LFO 2, RANDOM, SMOOTH; 0: the default */
     fset_t set[14];                                           /* anything else, over the resting sound */
     fmod_t mod[3];
+    struct { uint8_t u1, s; } stg[3];                         /* stages: (effect or NB_STAGE_NET) + 1, its stage */
 } factory_t;
+#define STG(u, st) { (uint8_t)((u) + 1), (st) }
 #define T_GAIN(c) (6 + (c))
 #define T_PITCH(c) (10 + (c))
 #define T_MIDN(c) (14 + (c))
@@ -99,30 +112,38 @@ static const factory_t factory[NB_NSNAP] = {
     /* TETHER: the four loops in a ring on the harmonics, a warm held chord */
     { { .346f, 0.f, .674f, .364f, .752f, .336f }, 0, 2, 0.f, { 0 },
       { MIX(NB_FX_REVERB, .15f) }, { { 0 } } },
-    /* EMBER: fuzz and fold over odd partials, SCREAM rocking slowly */
+    /* EMBER (heterodox): a fuzz whose coupling capacitor breathes, choking when loud, its tone on the 7th harmonic;
+     * fold over odd partials, SCREAM rocking slowly */
     { { .423f, .104f, .759f, .244f, .594f, .865f }, 1, 3, .1f, { 0 },
-      { MIX(NB_FX_FUZZ, .6f), MIX(NB_FX_FOLD, .5f) }, { MOD(NB_K_GRITO, NB_SRC_LFO1, .15f) } },
-    /* CHALK: the bell partials through the short echoes, a little room */
+      { MIX(NB_FX_FUZZ, .6f), FXK(NB_FX_FUZZ, 1, .4f), FXK(NB_FX_FUZZ, 2, .3f), MIX(NB_FX_FOLD, .5f) },
+      { MOD(NB_K_GRITO, NB_SRC_LFO1, .15f) }, { STG(NB_FX_FUZZ, 1) } },
+    /* CHALK (heterodox): the bell partials through echoes tuned to each loop (two periods: every harmonic
+     * reinforced, damped), a room */
     { { .208f, 0.f, .445f, .444f, .907f, .195f }, 0, 5, 0.f, { 0 },
-      { MIX(NB_FX_ECHO, .5f), MIX(NB_FX_REVERB, .3f) }, { { 0 } } },
-    /* DEW: a chain of octaves through the shifter, each pass a little higher: glass, delay and plate */
+      { MIX(NB_FX_ECHO, .5f), FXK(NB_FX_ECHO, 0, .6f), FXK(NB_FX_ECHO, 1, .7f), FXK(NB_FX_ECHO, 2, .6f),
+        MIX(NB_FX_REVERB, .3f) }, { { 0 } }, { STG(NB_FX_ECHO, 1) } },
+    /* DEW (heretic): a chain of octaves through a mirror (the spectrum turned over around the first loop's pitch
+     * each pass, so it holds there and every other partial comes back upside down): glass inverted, delay, plate */
     { { .159f, .036f, .9f, .524f, .1f, .100f }, 2, 4, 0.f, { 0 },
-      { MIX(NB_FX_SHIFT, .6f), FXK(NB_FX_SHIFT, 0, .53f), MIX(NB_FX_DELAY, .2f), MIX(NB_FX_REVERB, .3f) },
-      { MOD(NB_K_FOCUS, NB_SRC_FOLLOW, -.2f) } },
-    /* SMOKE: everyone into everyone on the bar's partials, ring and wrap, MID drifting */
+      { MIX(NB_FX_SHIFT, .4f), FXK(NB_FX_SHIFT, 0, .64f), MIX(NB_FX_DELAY, .2f), MIX(NB_FX_REVERB, .3f) },
+      { MOD(NB_K_FOCUS, NB_SRC_FOLLOW, -.2f) }, { STG(NB_FX_SHIFT, 2) } },
+    /* SMOKE (heterodox: the ring's carrier is the neighbour loop): everyone into everyone on the bar's partials, ring and wrap, MID drifting */
     { { .569f, .405f, .83f, .311f, .662f, .668f }, 4, 6, .2f, { 0 },
       { MIX(NB_FX_RING, .4f), FXK(NB_FX_RING, 2, .6f), MIX(NB_FX_WRAP, .4f) },
-      { MOD(NB_K_MID, NB_SRC_RANDOM, .08f) } },
-    /* DROUGHT: an op-amp rail to rail and the flip-flops, low and dry */
+      { MOD(NB_K_MID, NB_SRC_RANDOM, .08f) }, { STG(NB_FX_RING, 1) } },
+    /* DROUGHT (heretic): an op-amp rail to rail, the loop's own crossings counted into three hits in eight: low,
+     * dry, a rhythm whose tempo is the pitch */
     { { .493f, .559f, .722f, .211f, .453f, 1.f }, 5, 1, .3f, { 0 },
-      { MIX(NB_FX_BLAST, .7f), MIX(NB_FX_DIVIDE, .5f) }, { { 0 } } },
+      { MIX(NB_FX_BLAST, .7f), MIX(NB_FX_DIVIDE, .5f), FXK(NB_FX_DIVIDE, 0, .2f), FXK(NB_FX_DIVIDE, 1, .29f),
+        FXK(NB_FX_DIVIDE, 2, .37f) }, { { 0 } }, { STG(NB_FX_DIVIDE, 2) } },
     /* SILL: a star in unison, the sweep and the pump in the loop */
     { { .423f, .234f, .70f, .411f, .836f, .514f }, 3, 0, 0.f, { 0 },
       { MIX(NB_FX_SWEEP, .6f), FXK(NB_FX_SWEEP, 0, .2f), MIX(NB_FX_PUMP, .5f), MIX(NB_FX_DELAY, .25f),
         MIX(NB_FX_REVERB, .2f) }, { { 0 } } },
-    /* MILL: a starved supply and fuzz, everything crossed, grinding low */
+    /* MILL (heretic): a supply that motorboats under the load, and fuzz, everything crossed, grinding low */
     { { .869f, .756f, .888f, .178f, .291f, 1.f }, 4, 6, .5f, { 0 },
-      { MIX(NB_FX_STARVE, .6f), MIX(NB_FX_FUZZ, .8f) }, { MOD(NB_K_CROSS, NB_SRC_LFO2, -.3f) } },
+      { MIX(NB_FX_STARVE, .6f), FXK(NB_FX_STARVE, 0, .6f), FXK(NB_FX_STARVE, 1, .45f), FXK(NB_FX_STARVE, 2, .3f),
+        MIX(NB_FX_FUZZ, .8f) }, { MOD(NB_K_CROSS, NB_SRC_LFO2, -.3f) }, { STG(NB_FX_STARVE, 2) } },
     /* HUSK: a low drone, each side two loops 5 Hz apart (and an octave over), trembling as they beat */
     { { 0.f, 0.f, .72f, .13f, .6f, .5f }, 1, 0, .05f, { 0 },
       { SET(T_PITCH(1), ST(12.f)), SET(T_PITCH(2), ST(1.84f)), SET(T_PITCH(3), ST(13.03f)), MIX(NB_FX_FUZZ, .3f),
@@ -131,45 +152,59 @@ static const factory_t factory[NB_NSNAP] = {
     { { .2f, 0.f, .85f, .79f, .45f, .3f }, 0, 1, 0.f, { 0 },
       { SET(T_LEVEL(0), .6f), SET(T_LEVEL(1), .6f), SET(T_LEVEL(2), .6f), SET(T_LEVEL(3), .6f), MIX(NB_FX_REVERB, .2f) },
       { { 0 } } },
-    /* MOTH: four loops a few cents apart and apart from each other, beating slowly */
+    /* MOTH (heterodox network): four loops a few cents apart, each warming with its own level and going flat, so
+     * the beating drifts as they play */
     { { 0.f, 0.f, .68f, .40f, .7f, .5f }, 1, 0, 0.f, { 0 },
       { SET(T_LEVEL(2), .6f), SET(T_LEVEL(3), .6f), MIX(NB_FX_REVERB, .35f), FXK(NB_FX_REVERB, 0, .7f) },
-      { { 0 } } },
-    /* GRAVEL: a harsh wall: everything crossed, rail to rail, wrapped, ring-modulated by its own carrier */
+      { { 0 } }, { STG(NB_STAGE_NET, 1) } },
+    /* GRAVEL (heretic): a harsh wall: everything crossed, rail to rail, four high bits XOR the neighbour's,
+     * ring-modulated by its own carrier */
     { { .7f, .6f, .85f, .26f, .35f, 1.f }, 4, 6, .4f, { 0 },
-      { MIX(NB_FX_BLAST, .7f), FXK(NB_FX_BLAST, 1, .3f), MIX(NB_FX_WRAP, .5f), FXK(NB_FX_WRAP, 2, .5f),
-        MIX(NB_FX_RING, .3f), FXK(NB_FX_RING, 0, 1.f), FXK(NB_FX_RING, 1, .6f) }, { { 0 } } },
+      { MIX(NB_FX_BLAST, .7f), FXK(NB_FX_BLAST, 1, .3f), MIX(NB_FX_WRAP, .5f), FXK(NB_FX_WRAP, 0, .2f),
+        FXK(NB_FX_WRAP, 1, .3f), FXK(NB_FX_WRAP, 2, .5f), MIX(NB_FX_RING, .3f), FXK(NB_FX_RING, 0, .6f),
+        FXK(NB_FX_RING, 1, 0.f) }, { { 0 } }, { STG(NB_FX_WRAP, 2) } },
     /* KITE: a whistle in unison, its pitch swaying, a wide room */
     { { .2f, 0.f, .78f, .68f, .6f, .2f }, 1, 0, 0.f, { .3f, 0, 0, 0 },
       { SET(T_LEVEL(0), .7f), SET(T_LEVEL(1), .7f), SET(T_LEVEL(2), .7f), SET(T_LEVEL(3), .7f), MIX(NB_FX_ECHO, .3f),
         FXK(NB_FX_ECHO, 2, .5f), MIX(NB_FX_DELAY, .25f), MIX(NB_FX_REVERB, .45f), FXK(NB_FX_REVERB, 0, .8f) },
       { MOD(NB_K_MID, NB_SRC_LFO1, .01f) } },
-    /* GRIST: fuzz rectified and divided, a starved supply, grinding */
+    /* GRIST (heterodox): fuzz through octaves in cascade and two subharmonics (a third and a quarter below), a
+     * starved supply, grinding */
     { { .5f, .3f, .78f, .30f, .5f, .8f }, 5, 2, .2f, { 0 },
-      { MIX(NB_FX_FUZZ, .7f), MIX(NB_FX_RECTIFY, .5f), MIX(NB_FX_DIVIDE, .4f), MIX(NB_FX_STARVE, .3f) },
-      { MOD(NB_K_MID, NB_SRC_RANDOM, .03f) } },
-    /* TIDE: a compressor in the loop and the band opening and closing, breathing */
+      { MIX(NB_FX_FUZZ, .7f), MIX(NB_FX_RECTIFY, .5f), FXK(NB_FX_RECTIFY, 0, .4f), MIX(NB_FX_DIVIDE, .4f),
+        FXK(NB_FX_DIVIDE, 0, .07f), FXK(NB_FX_DIVIDE, 1, .14f), MIX(NB_FX_STARVE, .3f) },
+      { MOD(NB_K_MID, NB_SRC_RANDOM, .03f) }, { STG(NB_FX_RECTIFY, 1), STG(NB_FX_DIVIDE, 1) } },
+    /* TIDE (heterodox): each loop ducked by the one before it in the star, the band opening and closing:
+     * breathing in turns */
     { { .3f, 0.f, .75f, .20f, .6f, .4f }, 3, 2, .4f, { .27f, 0, 0, 0 },
       { MIX(NB_FX_PUMP, .7f), FXK(NB_FX_PUMP, 0, .6f), FXK(NB_FX_PUMP, 1, .5f), FXK(NB_FX_PUMP, 2, 1.f) },
-      { MOD(NB_K_FOCUS, NB_SRC_LFO1, -.5f), MOD(NB_T_HISS, NB_SRC_LFO1, .4f), MOD(NB_K_GAIN, NB_SRC_LFO1, .3f) } },
-    /* LANTERN: a star on the bell, SCREAM and MID wandering, delay and plate */
+      { MOD(NB_K_FOCUS, NB_SRC_LFO1, -.5f), MOD(NB_T_HISS, NB_SRC_LFO1, .4f), MOD(NB_K_GAIN, NB_SRC_LFO1, .3f) },
+      { STG(NB_FX_PUMP, 1) } },
+    /* LANTERN (heretic): a star on the bell that rewires itself (the sends follow who is loud), SCREAM and MID
+     * wandering, delay, and a room that swallows what stays the same */
     { { .4f, .45f, .72f, .35f, .7f, .4f }, 3, 5, 0.f, { 0, 0, .25f, 1.f },
       { MIX(NB_FX_ECHO, .3f), FXK(NB_FX_ECHO, 2, .6f), MIX(NB_FX_DELAY, .3f), FXK(NB_FX_DELAY, 1, .5f),
-        MIX(NB_FX_REVERB, .4f) },
-      { MOD(NB_K_MID, NB_SRC_RANDOM, .05f), MOD(NB_K_GRITO, NB_SRC_LFO1, .2f) } },
+        MIX(NB_FX_REVERB, .4f), FXK(NB_FX_REVERB, 1, .5f) },
+      { MOD(NB_K_MID, NB_SRC_RANDOM, .05f), MOD(NB_K_GRITO, NB_SRC_LFO1, .2f) },
+      { STG(NB_STAGE_NET, 2), STG(NB_FX_REVERB, 2) } },
 };
 
 /* ---- the pads ---- */
 static const uint8_t white_keys[16] = { 0, 2, 4, 6, 7, 9, 11, 12, 14, 16, 18, 19, 21, 23, 24, 26 };
 static const uint8_t black_keys[11] = { 1, 3, 5, 8, 10, 13, 15, 17, 20, 22, 25 };
-static const uint8_t kick_mask[16] = { 1, 2, 4, 8, 1, 2, 4, 8, 3, 12, 5, 10, 15, 15, 15, 15 };
-enum { G_CUT, G_OPEN, G_RETURN, G_CHOP32, G_CHOP16, G_CHOP8, G_CHOP4, G_SC4, G_SC8, G_SC16, G_SC32 };
+/* the black keys, left to right (docs/CONTROLES.md R3.8): the strikes at the left hand, the cuts, VIEW at the end */
+enum { G_N1, G_N2, G_N3, G_N4, G_ALL, G_CUT, G_CHOP, G_SCATTER, G_RETURN, G_OPEN, G_VIEW };
 static const char *const gate_names[11] = {
-    "CUT", "OPEN", "RETURN", "CHOP 32", "CHOP 16", "CHOP 8", "CHOP 4",
-    "SCATTER 4", "SCATTER 8", "SCATTER 16", "SCATTER 32"
+    "NODE 1", "NODE 2", "NODE 3", "NODE 4", "ALL", "CUT", "CHOP", "SCATTER", "RETURN", "OPEN", "VIEW"
 };
+static const uint8_t chop_steps[4] = { 32, 16, 8, 4 };     /* crossings per cut; the default the second */
+static const uint8_t scat_rates[4] = { 4, 8, 16, 32 };     /* cuts a second; the default the second */
+#define MEM_TAP_MS 250u                                    /* a white key held longer MORPHs */
+#define MEM_GLIDE_MS 1500u                                 /* ... and gets there in this time */
 
 const char *nb_snap_name(int i) { return (i >= 0 && i < NB_NSNAP) ? snap_names[i] : ""; }
+/* a memory as the instrument says it: its number (Mario: no memory names on the screen) */
+static const char *const mem_nums[NB_NSNAP] = { "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16" };
 const char *nb_topology_name(int i) { return (i >= 0 && i < NB_NTOPO) ? topo_names[i] : ""; }
 const char *nb_partials_name(int i) { return (i >= 0 && i < NB_NPART) ? part_names[i] : ""; }
 const char *nb_page_name(int i) { return (i >= 0 && i < NB_NPAGE) ? page_names[i] : ""; }
@@ -179,7 +214,7 @@ int nb_topology_count(void) { return NB_NTOPO; }
 int nb_partials_count(void) { return NB_NPART; }
 const char *nb_pad_name(int key)
 {
-    for (int i = 0; i < 16; ++i) if (white_keys[i] == key) return "KICK";
+    for (int i = 0; i < 16; ++i) if (white_keys[i] == key) return mem_nums[i];
     for (int i = 0; i < 11; ++i) if (black_keys[i] == key) return gate_names[i];
     return "";
 }
@@ -259,6 +294,7 @@ static void factory_snap(nb_snap *s, int i)
         s->mod_t[m] = (uint8_t)(f->mod[m].t1 - 1); s->mod_s[m] = f->mod[m].src; s->mod_d[m] = f->mod[m].d;
     }
     for (int l = 0; l < NB_LANES; ++l) s->lane_target[l] = 0xff;
+    for (int k = 0; k < 3 && f->stg[k].u1; ++k) s->stage[f->stg[k].u1 - 1] = f->stg[k].s;
 }
 
 /* ---- keeping: the sounds packed into two banks of eight, one sector each, each with its check ---- */
@@ -286,6 +322,10 @@ static void pack(const nb_snap *s, nb_snap_packed *o)
     }
     o->motion_ms = s->motion_ms;
     o->topology = s->topology; o->partials = s->partials;
+    uint32_t st = 0;
+    for (int f = 0; f <= NB_NFX; ++f) st |= (uint32_t)(s->stage[f] < 3 ? s->stage[f] : 0) << (2 * f);
+    for (int k = 0; k < 4; ++k) o->stage[k] = (uint8_t)(st >> (8 * k));
+    o->fx_off = (uint16_t)(s->fx_off & ((1u << NB_NFX) - 1u));
 }
 
 static void unpack(const nb_snap_packed *o, nb_snap *s)
@@ -304,6 +344,66 @@ static void unpack(const nb_snap_packed *o, nb_snap *s)
     s->motion_ms = o->motion_ms > 8000u ? 8000u : o->motion_ms;
     s->topology = o->topology < NB_NTOPO ? o->topology : 0;
     s->partials = o->partials < NB_NPART ? o->partials : 2;
+    uint32_t st = (uint32_t)o->stage[0] | (uint32_t)o->stage[1] << 8 | (uint32_t)o->stage[2] << 16 | (uint32_t)o->stage[3] << 24;
+    for (int f = 0; f <= NB_NFX; ++f) { uint8_t v = (uint8_t)((st >> (2 * f)) & 3u); s->stage[f] = v < 3 ? v : 0; }
+    s->fx_off = (uint16_t)(o->fx_off & ((1u << NB_NFX) - 1u));
+}
+
+/* a bank kept in an older layout whose sounds are this one's first snap_bytes (NB08: all but fx_off): it loads with
+ * the rest at zero (every effect on); 1 when the size was that layout's (loaded, or refused by its check) */
+static void store_commit(nb_panel *p, int banks);
+static void recall(nb_panel *p, int i);
+static void mark_stored(nb_panel *p, int i);
+static int load_older(nb_panel *p, int bank, const uint8_t *src, unsigned bytes, unsigned snap_bytes, uint32_t magic)
+{
+    unsigned setup_at = 8u + NB_BANK_SNAPS * snap_bytes;
+    if (bytes != setup_at + (unsigned)sizeof(nb_setup) + 4u) return 0;
+    uint32_t mg, bk, ck, h = 2166136261u;
+    uint8_t *w;
+    w = (uint8_t *)&mg; for (int k = 0; k < 4; ++k) w[k] = src[k];
+    w = (uint8_t *)&bk; for (int k = 0; k < 4; ++k) w[k] = src[4 + k];
+    w = (uint8_t *)&ck; for (int k = 0; k < 4; ++k) w[k] = src[bytes - 4u + (unsigned)k];
+    for (unsigned i = 4; i < bytes - 4u; ++i) { h ^= src[i]; h *= 16777619u; }
+    if (mg != magic || bk != (uint32_t)bank || ck != h) return 1;
+    for (int i = 0; i < NB_BANK_SNAPS; ++i) {
+        static nb_snap_packed n;
+        uint8_t *b = (uint8_t *)&n;
+        for (unsigned k = 0; k < sizeof n; ++k) b[k] = 0;
+        for (unsigned k = 0; k < snap_bytes; ++k) b[k] = src[8u + (unsigned)i * snap_bytes + k];
+        unpack(&n, &p->snaps[bank * NB_BANK_SNAPS + i]);
+        mark_stored(p, bank * NB_BANK_SNAPS + i);
+    }
+    if (bank == 0) {
+        nb_setup st;
+        w = (uint8_t *)&st; for (unsigned k = 0; k < sizeof st; ++k) w[k] = src[setup_at + k];
+        p->setup_midi_ch = st.midi_ch <= 16 ? st.midi_ch : 0;
+        p->setup_bright = (float)st.bright * (1.f / 65535.f);
+    }
+    store_commit(p, 1 << bank);             /* packed again in the new form (kept at the next save) */
+    p->store_dirty &= ~(1 << bank);
+    recall(p, p->snap_index);
+    return 1;
+}
+
+/* the bank as the build before the stages kept it ("NB07"): the same, without the 4 bytes of stages */
+typedef struct {
+    uint16_t v[NB_NTARGET];
+    uint8_t mod_t[NB_NMOD], mod_s[NB_NMOD];
+    int8_t mod_d[NB_NMOD];
+    uint8_t rate[4];
+    uint8_t lane_target[NB_LANES];
+    uint8_t lane[NB_LANES][NB_LANE_PTS];
+    uint16_t motion_ms;
+    uint8_t topology, partials;
+} snap_v7;
+typedef struct { uint32_t magic, bank; snap_v7 snap[NB_BANK_SNAPS]; nb_setup setup; uint32_t check; } store_v7;
+_Static_assert(sizeof(store_v7) == NB_STORE_V7_BYTES, "the NB07 bank as it was kept");
+static uint32_t store_check_v7(const store_v7 *s)
+{
+    const uint8_t *b = (const uint8_t *)&s->bank, *end = (const uint8_t *)&s->check;
+    uint32_t h = 2166136261u;
+    for (; b < end; ++b) { h ^= *b; h *= 16777619u; }
+    return h;
 }
 
 /* the banks given as bits packed again (bit b: memories b * 8 .. + 7; the setup goes with bank 0) */
@@ -320,16 +420,32 @@ static void store_commit(nb_panel *p, int banks)
         if (b == 0) {
             s->setup.midi_ch = p->setup_midi_ch;
             s->setup.bright = (uint16_t)(nb_clamp(p->setup_bright, 0.f, 1.f) * 65535.f + .5f);
+            s->setup.transition = (uint8_t)(nb_clamp(p->setup_transition, 0.f, 1.f) * 255.f + .5f);
         }
         s->check = store_check(s);
     }
     p->store_dirty |= banks;
 }
 
+/* whether memory i holds a sound of its own (not the factory's): its white key dims */
+static void mark_stored(nb_panel *p, int i)
+{
+    static nb_snap fac;
+    static nb_snap_packed a, b;
+    factory_snap(&fac, i);
+    pack(&fac, &a);
+    pack(&p->snaps[i], &b);
+    const uint8_t *x = (const uint8_t *)&a, *y = (const uint8_t *)&b;
+    int same = 1;
+    for (unsigned k = 0; k < sizeof a; ++k) if (x[k] != y[k]) { same = 0; break; }
+    p->stored = (uint16_t)(same ? p->stored & ~(1u << i) : p->stored | (1u << i));
+}
+
 static void recall(nb_panel *p, int i)
 {
     p->cur = p->snaps[i];
     p->snap_index = i;
+    p->edited = 0;
     p->motion_t0 = p->last_ms;
     p->morph_target = -1;
 }
@@ -385,7 +501,7 @@ static const char *const ch_labels[4][4] = {
 static const char *const from_labels[4] = { "FROM 1", "FROM 2", "FROM 3", "FROM 4" };
 static const char *const knob_labels[NB_NKNOB] = { "CROSS", "SCREAM", "GAIN", "MID", "FOCUS", "DRIVE" };
 static const char *const mod_labels[4] = { "LFO 1", "LFO 2", "RANDOM", "SMOOTH" };
-static const char *const setup_labels[4] = { "MIDI CH", "BRIGHT", "", "" };
+static const char *const setup_labels[4] = { "MIDI CH", "BRIGHT", "TRANSITION", "" };
 static const char *const shape_labels[4] = { "TOPOLOGY", "PARTIALS", "", "" };
 static const int8_t loop_t[4] = { NB_K_MID, NB_K_FOCUS, NB_K_DRIVE, NB_T_HISS };
 static const char *const loop_l[4] = { "MID", "FOCUS", "DRIVE", "HISS" };
@@ -427,7 +543,7 @@ static slot_t slot_of(nb_panel *p, int enc)
     }
     if (pg >= NB_PG_FX1 && pg <= NB_PG_REVERB) {
         int f = pg - NB_PG_FX1;
-        s.label = fx_knobs[f][k];
+        s.label = k < 3 ? fx_knobs[f][c->stage[f] < 3 ? c->stage[f] : 0][k] : "MIX";
         s.target = NB_T_FX + f * 4 + k; s.pos = &c->fx[f][k];
         if (f == NB_FX_SHIFT && k == 0) s.kind = NB_KIND_BI;      /* SHIFT: down or up from the centre */
         return s;
@@ -436,6 +552,7 @@ static slot_t slot_of(nb_panel *p, int enc)
     s.label = setup_labels[k];                       /* SETUP */
     if (k == 0) { s.kind = NB_KIND_STEP; s.steps = 17; return s; }
     if (k == 1) { s.pos = &p->setup_bright; return s; }
+    if (k == 2) { s.pos = &p->setup_transition; return s; }
     s.kind = NB_KIND_NONE;
     return s;
 }
@@ -448,6 +565,7 @@ static int step_index(const nb_panel *p, int k)
 static void step_set(nb_panel *p, int k, int idx)
 {
     if (p->page == NB_PG_SETUP) { p->setup_midi_ch = (uint8_t)idx; p->setup_dirty = 1; return; }
+    p->edited = 1;
     if (k == 0) load_topology(&p->cur, idx);
     else p->cur.partials = (uint8_t)idx;
 }
@@ -520,8 +638,8 @@ static void slot_text(nb_panel *p, int enc, char *out, int n, float *bar, int *b
         *bar = step_pos(i, s.steps);
         return;
     }
-    float v = *s.pos;
-    *bar = v;
+    float v = s.target >= 0 ? *target_ptr(&p->eff, s.target) : *s.pos;   /* as played: with its modulation */
+    *bar = *s.pos;
     int pg = p->page, k = enc - 2;
     if (enc_fixed[enc] == NB_K_GAIN) { fmt_num(out, n, q->gain, 2, 0, "X"); return; }
     if (enc_fixed[enc] < 0 && pg == NB_PG_LOOP && k == 0) { fmt_num(out, n, q->mid_hz, 0, 0, "HZ"); return; }
@@ -535,12 +653,14 @@ static void slot_text(nb_panel *p, int enc, char *out, int n, float *bar, int *b
         fmt_num(out, n, q->gain * q->ch_gain[k], 2, 0, "X");
         return;
     }
-    if (enc_fixed[enc] < 0 && pg >= NB_PG_FX1 && pg <= NB_PG_REVERB && fx_text(pg - NB_PG_FX1, k, v, out, n)) return;
+    if (enc_fixed[enc] < 0 && pg >= NB_PG_FX1 && pg <= NB_PG_REVERB && p->cur.stage[pg - NB_PG_FX1] == 0
+        && fx_text(pg - NB_PG_FX1, k, v, out, n)) return;
     if (enc_fixed[enc] < 0 && pg == NB_PG_MOD) {
         if (k < 3) { float hz = rate_hz(v); fmt_num(out, n, hz, hz < 10.f ? 2 : 1, 0, "HZ"); }
         else fmt_num(out, n, v * 100.f, 0, 0, "%");
         return;
     }
+    if (enc_fixed[enc] < 0 && pg == NB_PG_SETUP && k == 2) { fmt_num(out, n, 2.f * v, 1, 0, " S"); return; }
     if (enc_fixed[enc] < 0 && pg == NB_PG_SETUP) { fmt_num(out, n, 25.f + 75.f * v, 0, 0, "%"); return; }
     if (*bip) { fmt_num(out, n, (v - 0.5f) * 200.f, 0, 1, "%"); return; }
     fmt_num(out, n, v * 100.f, 0, 0, "%");
@@ -591,9 +711,17 @@ void nb_panel_init(nb_panel *p)
     for (int i = 0; i < NB_NSNAP; ++i) factory_snap(&p->snaps[i], i);
     p->setup_midi_ch = 0;
     p->setup_bright = 1.f;
+    /* Mario's default is 0.5 s (0.25), but a memory changed under DRONE while it glides lets 5 of the 16 die (TETHER
+     * CHALK SILL MOTH LANTERN: presetcheck -s "switched"); the engine has no strike for the silent loops yet (T-16):
+     * 0 (a jump, as before) until it does */
+    p->setup_transition = 0.f;
     store_commit(p, (1 << NB_NBANK) - 1);
     p->store_dirty = 0;
     p->last_gate_key = -1;
+    p->chop_sel = 1; p->scat_sel = 1;
+    p->mem_key = -1;
+    p->fxk = -1;
+    p->fx_full_key = -1;
     p->splash = 1;
     p->level = 0.7f;
     p->focus = 2;               /* K1 */
@@ -607,20 +735,59 @@ void nb_panel_init(nb_panel *p)
 
 void nb_panel_load(nb_panel *p, int bank, const void *blob, unsigned bytes)
 {
-    if (!blob || bank < 0 || bank >= NB_NBANK || bytes != sizeof(nb_store)) return;
+    if (!blob || bank < 0 || bank >= NB_NBANK) return;
+    if (bytes == NB_STORE_V7_BYTES) {      /* kept before the stages: every sound as it was, all orthodox */
+        static store_v7 o;
+        const uint8_t *src = (const uint8_t *)blob;
+        uint8_t *dst = (uint8_t *)&o;
+        for (unsigned i = 0; i < sizeof o; ++i) dst[i] = src[i];
+        if (o.magic != 0x4e423037u || o.bank != (uint32_t)bank || o.check != store_check_v7(&o)) return;
+        for (int i = 0; i < NB_BANK_SNAPS; ++i) {
+            static nb_snap_packed n;
+            const uint8_t *a = (const uint8_t *)&o.snap[i];
+            uint8_t *b = (uint8_t *)&n;
+            for (unsigned k = 0; k < sizeof n; ++k) b[k] = 0;
+            for (unsigned k = 0; k < sizeof o.snap[i]; ++k) b[k] = a[k];    /* the same layout up to the stages */
+            unpack(&n, &p->snaps[bank * NB_BANK_SNAPS + i]);
+        }
+        if (bank == 0) {
+            p->setup_midi_ch = o.setup.midi_ch <= 16 ? o.setup.midi_ch : 0;
+            p->setup_bright = (float)o.setup.bright * (1.f / 65535.f);
+        }
+        store_commit(p, 1 << bank);         /* packed again in the new form (kept at the next save) */
+        p->store_dirty &= ~(1 << bank);
+        recall(p, p->snap_index);
+        return;
+    }
+    if (load_older(p, bank, (const uint8_t *)blob, bytes, NB_STORE_V8_BYTES / NB_BANK_SNAPS - 2u, 0x4e423038u)) return;
+    if (bytes != sizeof(nb_store)) return;
     static nb_store s;
     const uint8_t *src = (const uint8_t *)blob;
     uint8_t *dst = (uint8_t *)&s;
     for (unsigned i = 0; i < sizeof s; ++i) dst[i] = src[i];
     if (s.magic != NB_STORE_MAGIC || s.bank != (uint32_t)bank || s.check != store_check(&s)) return;
     p->store[bank] = s;
-    for (int i = 0; i < NB_BANK_SNAPS; ++i) unpack(&s.snap[i], &p->snaps[bank * NB_BANK_SNAPS + i]);
+    for (int i = 0; i < NB_BANK_SNAPS; ++i) {
+        unpack(&s.snap[i], &p->snaps[bank * NB_BANK_SNAPS + i]);
+        mark_stored(p, bank * NB_BANK_SNAPS + i);
+    }
     if (bank == 0) {
         p->setup_midi_ch = s.setup.midi_ch <= 16 ? s.setup.midi_ch : 0;
         p->setup_bright = (float)s.setup.bright * (1.f / 65535.f);
+        p->setup_transition = (float)s.setup.transition * (1.f / 255.f);
     }
     recall(p, p->snap_index);
 }
+
+void nb_panel_set_stage(nb_panel *p, int unit, int stage, uint32_t ms)
+{
+    if (unit < 0 || unit > NB_NFX || stage < 0 || stage > 2) return;
+    p->cur.stage[unit] = (uint8_t)stage;
+    char t[16];
+    str_set(t, unit < NB_NFX ? fx_names[unit] : "NETWORK", sizeof t);
+    hud_text(p, t, stage == 0 ? "ORTHODOX" : stage == 1 ? "HETERODOX" : "HERETIC", ms);
+}
+int nb_panel_stage(const nb_panel *p, int unit) { return (unit >= 0 && unit <= NB_NFX) ? p->cur.stage[unit] : 0; }
 
 int nb_panel_take_store(nb_panel *p)
 {
@@ -650,6 +817,36 @@ static float turn_step(nb_panel *p, int enc, int d, uint32_t ms)
     return step > 1.f / 24.f ? 1.f / 24.f : step;
 }
 
+/* the device's render budget: the network and each effect, %. Provisional (the unit: the network about 50 %, the 14 at
+ * full MIX 115-117 %; spread by the PC's tests/fx_cost.c) until the engine publishes NB_FX_COST and its base */
+#ifdef NB_FX_COST
+static const float fx_cost_pct[NB_NFX] = NB_FX_COST;
+static const float fx_base_pct = NB_FX_BASE;
+#else
+static const float fx_cost_pct[NB_NFX] = {
+    /* FUZZ BLAST FOLD WRAP RECTIFY DIVIDE RING STARVE SHIFT ECHO PUMP SWEEP DELAY REVERB */
+    8.7f, 4.4f, 6.8f, 2.8f, 2.3f, 2.9f, 1.4f, 2.9f, 3.6f, 7.8f, 3.1f, 9.3f, 1.9f, 1.4f
+};
+static const float fx_base_pct = 50.f;
+#endif
+float nb_fx_cost(int fx) { return fx >= 0 && fx < NB_NFX ? fx_cost_pct[fx] : fx_base_pct; }
+float nb_fx_load(const nb_snap *s, int except)
+{
+    float l = fx_base_pct;
+    for (int f = 0; f < NB_NFX; ++f) if (f != except && s->fx[f][3] > 0.f && !((s->fx_off >> f) & 1u)) l += fx_cost_pct[f];
+    return l;
+}
+/* a slot about to take a MIX from 0 when that effect would pass the budget: refused (FX FULL) */
+static int fx_refused(nb_panel *p, const slot_t *s, float v)
+{
+    int t = s->target - NB_T_FX;
+    if (s->target < NB_T_FX || (t & 3) != 3 || *s->pos > 0.f || v <= 0.f) return 0;
+    if (((p->cur.fx_off >> (t >> 2)) & 1u) || nb_fx_load(&p->cur, t >> 2) + fx_cost_pct[t >> 2] <= NB_FX_BUDGET) return 0;
+    p->fx_full = 1;
+    p->fx_full_key = t >> 2; p->fx_full_ms = p->last_ms;
+    return 1;
+}
+
 static void slot_turn(nb_panel *p, int enc, int d, uint32_t ms)
 {
     slot_t s = slot_of(p, enc);
@@ -665,7 +862,9 @@ static void slot_turn(nb_panel *p, int enc, int d, uint32_t ms)
     float v = *s.pos + (float)d * step;
     /* a bipolar knob rests a moment at its centre */
     if (s.kind == NB_KIND_BI && (*s.pos - 0.5f) * (v - 0.5f) < 0.f) v = 0.5f;
+    if (fx_refused(p, &s, v)) return;
     *s.pos = nb_clamp(v, 0.f, 1.f);
+    if (p->page != NB_PG_SETUP) p->edited = 1;
     if (p->page == NB_PG_SETUP && enc_fixed[enc] < 0) p->setup_dirty = 1;
 }
 
@@ -678,7 +877,9 @@ static void slot_set(nb_panel *p, int enc, float x)
         step_set(p, enc - 2, i);
         return;
     }
+    if (fx_refused(p, &s, x)) return;
     *s.pos = nb_clamp(x, 0.f, 1.f);
+    if (p->page != NB_PG_SETUP) p->edited = 1;
     if (p->page == NB_PG_SETUP && enc_fixed[enc] < 0) p->setup_dirty = 1;
 }
 
@@ -850,7 +1051,9 @@ static void morph_apply(nb_panel *p, float x)
     const nb_snap *near = x < 0.5f ? a : b;
     c->topology = near->topology;
     c->partials = near->partials;
+    for (int f = 0; f <= NB_NFX; ++f) c->stage[f] = near->stage[f];     /* the engine crossfades the change */
     for (int m = 0; m < NB_NMOD; ++m) { c->mod_t[m] = near->mod_t[m]; c->mod_s[m] = near->mod_s[m]; c->mod_d[m] = near->mod_d[m]; }
+    c->fx_off = near->fx_off;
 }
 
 static void go_page(nb_panel *p, int np, uint32_t ms)
@@ -859,6 +1062,150 @@ static void go_page(nb_panel *p, int np, uint32_t ms)
     if (np != p->page) p->hud.slide = 1;
     p->page = np;
     hud_show(p, NB_HUD_PAGE, ms);
+}
+
+/* ---- the stage's views (docs/TELA.md 13): the view key steps them, and held, the keys play the view ---- */
+/* THE VIEW KEY, the one place that says which control it is: F#5 (the last black key) until the controls' revision 3
+ * moves the layer to GLO; then these three answer for that button instead (and the MOD moves to LFO first) */
+static int view_key_held(uint32_t keys, uint32_t buttons) { (void)buttons; return (int)((keys >> NB_KEY_VIEW) & 1u); }
+static int view_key_is(int key) { return key == NB_KEY_VIEW; }
+static void view_key_light(nb_panel *p) { p->led[14 + NB_KEY_VIEW] = 1; }
+static void view_step(nb_panel *p, int d, uint32_t ms)
+{
+    p->view = (p->view + d + NB_NVIEW) % NB_NVIEW;
+    p->view_ms = ms ? ms : 1u;
+}
+static void layer_keys(nb_panel *p, uint32_t keys, uint32_t kdown)
+{
+    p->listen = p->pull = p->iso = -1;
+    p->flip = p->freeze = p->bypass = 0;
+    for (int w = 0; w < 12; ++w) {
+        if (!((keys >> white_keys[w]) & 1u)) continue;
+        p->layer_used = 1;
+        if (w < 4) { if (p->listen < 0) p->listen = (int8_t)w; }
+        else if (w < 8) { if (p->pull < 0) p->pull = (int8_t)(w - 4); }
+        else if (p->iso < 0) p->iso = (int8_t)(w - 8);
+    }
+    for (int g = 0; g < 5; ++g) {
+        int key = black_keys[g];
+        if (!((keys >> key) & 1u)) continue;
+        p->layer_used = 1;
+        if (g == 0) p->flip = 1;
+        else if (g == 1) p->freeze = 1;
+        else if (g == 2) p->bypass = 1;
+        else if ((kdown >> key) & 1u) p->spin += g == 3 ? -1 : 1;
+    }
+}
+static int str_eq(const char *a, const char *b) { while (*a && *a == *b) { ++a; ++b; } return *a == *b; }
+
+/* the screen's frame (docs/TELA.md 6, 13), filled at every update: the page, K1..K4 with their names and values,
+ * the memory or the pad, the strips, the modulation, the views and the layer. The screen session's block. */
+static void screen_frame(nb_panel *p, const nb_controls *c, uint32_t ms, int layer, int busy)
+{
+    nb_hud *h = &p->hud;
+    str_set(h->page, page_names[p->page], sizeof h->page);
+    h->turning = -1;
+    for (int k = 0; k < 4; ++k) {
+        int e = 2 + k;
+        slot_t sl = slot_of(p, e);
+        h->kkind[k] = (uint8_t)sl.kind;
+        h->kval[k] = nb_slot_value(p, e);
+        h->kmod[k] = -1.f;
+        h->words[k][0] = 0;
+        str_set(h->knames[k], sl.label, sizeof h->knames[k]);
+        h->ktext[k][0] = 0;
+        if (sl.kind != NB_KIND_NONE) { float bar; int bip; slot_text(p, e, h->ktext[k], sizeof h->ktext[k], &bar, &bip); }
+        if (sl.kind == NB_KIND_STEP) { float bar; int bip; slot_text(p, e, h->words[k], sizeof h->words[k], &bar, &bip); }
+        else if (sl.kind != NB_KIND_NONE && sl.target >= 0) {
+            int moved = mod_find(&p->cur, sl.target) >= 0;
+            for (int l = 0; l < NB_LANES; ++l) if (p->cur.motion_ms && p->cur.lane_target[l] == sl.target) moved = 1;
+            if (moved) h->kmod[k] = *target_ptr(&p->eff, sl.target);
+        }
+        if (p->turn_ms[e] && ms - p->turn_ms[e] < 250u) h->turning = (int8_t)k;
+    }
+    h->any_mod = 0;
+    for (int m = 0; m < NB_NMOD; ++m) if (p->cur.mod_t[m] != 0xff && p->cur.mod_d[m] != 0.f) h->any_mod = 1;
+    h->fx_in = 0;
+    for (int f = 0; f < NB_NLOOPFX; ++f) if (p->params.fx[f][3] > 0.f) h->fx_in |= (uint16_t)(1u << f);
+    h->fx_cut = p->fx_cut;
+    h->strip_n = 0; h->strip_cur = -1; h->strip_hot = 0;
+    if (h->kind == NB_HUD_PAGE) {
+        int pg = p->page;
+        if (pg >= NB_PG_FX1 && pg < NB_PG_FX1 + NB_NLOOPFX) { h->strip_n = NB_NLOOPFX; h->strip_cur = (int8_t)(pg - NB_PG_FX1); }
+        else if (pg < NB_PG_INTO1) { h->strip_n = 5; h->strip_cur = (int8_t)pg; }
+        else if (pg < NB_PG_SHAPE) { h->strip_n = 4; h->strip_cur = (int8_t)(pg - NB_PG_INTO1); }
+    } else if (h->kind == NB_HUD_TEXT) {
+        if (str_eq(h->title, "MEMORY") || str_eq(h->title, "STORE") || str_eq(h->title, "STORED") || str_eq(h->title, "MORPH")) {
+            h->strip_n = NB_NSNAP; h->strip_cur = (int8_t)p->snap_index;
+            h->strip_hot = (uint8_t)(h->title[0] == 'S');
+        } else if (str_eq(h->title, "LFO")) { h->strip_n = NB_NSRC; h->strip_cur = (int8_t)p->mod_sel; }
+    }
+    h->rows_text = 0;
+    h->into = (int8_t)(p->page >= NB_PG_INTO1 && p->page < NB_PG_INTO1 + 4 ? p->page - NB_PG_INTO1 : -1);
+    h->focus_loop = (int8_t)(p->page >= NB_PG_CH1 && p->page < NB_PG_CH1 + 4 ? p->page - NB_PG_CH1 : h->into);
+    h->modline[0] = 0; h->mod_now = -1.f;
+    if (h->kind == NB_HUD_KNOB && h->enc >= 0) {
+        slot_t sl = slot_of(p, h->enc);
+        int m = sl.target >= 0 ? mod_find(&p->cur, sl.target) : -1;
+        if (m >= 0 && p->cur.mod_d[m] != 0.f) {
+            float d = p->cur.mod_d[m], v = *target_ptr(&p->cur, sl.target);
+            char num[12];
+            str_set(h->modline, src_names[p->cur.mod_s[m] < NB_NSRC ? p->cur.mod_s[m] : 0], sizeof h->modline);
+            fmt_num(num, sizeof num, d * 100.f, 0, 1, "%");
+            int at = str_add(h->modline, str_len(h->modline), " ", sizeof h->modline);
+            str_add(h->modline, at, num, sizeof h->modline);
+            h->mod_lo = nb_clamp(v - nb_absf(d), 0.f, 1.f);
+            h->mod_hi = nb_clamp(v + nb_absf(d), 0.f, 1.f);
+            h->mod_now = *target_ptr(&p->eff, sl.target);
+        }
+    }
+    /* the foot: the view layer's action, a pad held, or the memory (and where a MORPH goes) */
+    /* no memory's name on the screen (Mario): the footer meters the output unless a pad or an action speaks */
+    h->foot_hot = 0;
+    h->foot[0] = 0;
+    h->struck = 0;
+    h->gating = 0;
+    h->morph_to = (int8_t)p->morph_target;
+    h->view = (uint8_t)p->view;
+    h->layer = (uint8_t)layer;
+    h->view_flash = (uint8_t)(layer || (p->view_ms && ms - p->view_ms < 1000u));
+    h->listen = p->listen; h->pull = p->pull; h->iso = p->iso;
+    h->flip = p->flip; h->freeze = p->freeze; h->bypass = p->bypass;
+    h->spin = (int8_t)p->spin;
+    if (layer) {
+        static const char *const act[3] = { "LISTEN ", "PULL ", "ISOLATE " };
+        int8_t n[3] = { p->listen, p->pull, p->iso };
+        for (int a = 0; a < 3; ++a)
+            if (n[a] >= 0) {
+                char d[2] = { (char)('1' + n[a]), 0 };
+                str_add(h->foot, str_add(h->foot, 0, act[a], sizeof h->foot), d, sizeof h->foot);
+                h->foot_hot = 1;
+                h->focus_loop = n[a];
+                break;
+            }
+        if (!h->foot_hot && (p->flip || p->freeze || p->bypass)) {
+            str_set(h->foot, p->flip ? "FLIP" : p->freeze ? "FREEZE" : "BYPASS", sizeof h->foot);
+            h->foot_hot = 1;
+        }
+    } else if (!busy) {
+        /* a node held: the loops it strikes, by number (1, 2, ... ALL: 1+2+3+4); a cut by its name; a white key is a
+         * memory, not a pad (docs/CONTROLES.md R3.8) */
+        for (int key = 0; key < NB_NKEY; ++key) {
+            if (view_key_is(key) || !((c->keys >> key) & 1u) || key_index(white_keys, 16, key) >= 0) continue;
+            int g = key_index(black_keys, 11, key);
+            if (g >= G_N1 && g <= G_ALL) h->struck |= g == G_ALL ? 15u : (uint8_t)(1u << g);
+            else if (!h->foot_hot) { str_set(h->foot, nb_pad_name(key), sizeof h->foot); h->foot_hot = 1; h->gating = 1; }
+        }
+        if (h->struck && !h->foot_hot) {
+            int at = 0;
+            for (int i = 0; i < NB_CH; ++i)
+                if ((h->struck >> i) & 1u) {
+                    char d[3] = { '+', (char)('1' + i), 0 };
+                    at = str_add(h->foot, at, at ? d : d + 1, sizeof h->foot);
+                }
+            h->foot_hot = 1;
+        }
+    }
 }
 
 void nb_panel_update(nb_panel *p, const nb_controls *c_in)
@@ -881,6 +1228,10 @@ void nb_panel_update(nb_panel *p, const nb_controls *c_in)
     int ribbon = (c->buttons >> NB_B_RIBBON) & 1u;
     int modding = (c->buttons >> NB_B_MOD) & 1u;
     int fxing = (c->buttons >> NB_B_FX) & 1u;
+    /* the view key: a tap steps the stage's view; held, K1 steps it and the keys play it */
+    int layer = view_key_held(c->keys, c->buttons), was = view_key_held(p->prev_keys, p->prev_buttons);
+    if (layer && !was) p->layer_used = 0;
+    if (!layer && was && !p->layer_used) view_step(p, 1, ms);
 
     mod_advance(p, dt, c->follow);
 
@@ -915,6 +1266,17 @@ void nb_panel_update(nb_panel *p, const nb_controls *c_in)
     for (int e = 0; e < 7; ++e) {
         int d = c->enc[e];
         if (!d) continue;
+        if (layer && e == 2) { view_step(p, d > 0 ? 1 : -1, ms); p->layer_used = 1; continue; }
+        if (e == 2 && !c->buttons && ((c->keys >> black_keys[G_CHOP]) & 1u || (c->keys >> black_keys[G_SCATTER]) & 1u)) {
+            int chop = p->last_gate_key == G_CHOP || !((c->keys >> black_keys[G_SCATTER]) & 1u);
+            uint8_t *sel = chop ? &p->chop_sel : &p->scat_sel;
+            int v = (int)*sel + (d > 0 ? 1 : -1);
+            *sel = (uint8_t)(v < 0 ? 0 : v > 3 ? 3 : v);
+            char txt[16];
+            fmt_num(txt, sizeof txt, (float)(chop ? chop_steps[*sel] : scat_rates[*sel]), 0, 0, chop ? "" : "/S");
+            hud_text(p, chop ? "CHOP" : "SCATTER", txt, ms);
+            continue;
+        }
         p->focus = e;
         slot_t s = slot_of(p, e);
         if (modding) {
@@ -929,6 +1291,7 @@ void nb_panel_update(nb_panel *p, const nb_controls *c_in)
                     float od = p->cur.mod_d[m], nd = od + (float)d * 2.f * turn_step(p, e, d, ms);   /* depth -1..1 */
                     if (od * nd < 0.f) nd = 0.f;                  /* it rests at zero on the way across */
                     p->cur.mod_d[m] = nb_clamp(nd, -1.f, 1.f);
+                    p->edited = 1;
                     if (p->cur.mod_d[m] == 0.f) p->cur.mod_t[m] = 0xff;   /* back to zero: the slot is free */
                 }
             }
@@ -976,7 +1339,8 @@ void nb_panel_update(nb_panel *p, const nb_controls *c_in)
         if (!(p->page >= NB_PG_FX1 && p->page < NB_PG_FX1 + NB_NLOOPFX)) { go_page(p, NB_PG_FX1 + p->last_fx, ms); p->fx_used = 1; }
         else hud_show(p, NB_HUD_PAGE, ms);
     }
-    if ((bup & (1u << NB_B_FX)) && !p->fx_used) {           /* touched again: the next effect */
+    /* touched again: the next effect (unless another section was chosen while FX was held) */
+    if ((bup & (1u << NB_B_FX)) && !p->fx_used && p->page >= NB_PG_FX1 && p->page < NB_PG_FX1 + NB_NLOOPFX) {
         p->last_fx = (p->page - NB_PG_FX1 + 1) % NB_NLOOPFX;
         go_page(p, NB_PG_FX1 + p->last_fx, ms);
     }
@@ -985,14 +1349,14 @@ void nb_panel_update(nb_panel *p, const nb_controls *c_in)
         /* the drone starts at once: a soft strike into the four loops, as a hand would give it */
         if (p->drone) { p->touch.kick_mask |= 15; p->touch.kick_color = 0.4f; }
     }
-    if (bdown & (1u << NB_B_MEMORY)) hud_text(p, "MEMORY", snap_names[p->snap_index], ms);
-    if (bdown & (1u << NB_B_STORE)) { p->store_used = 0; hud_text(p, "STORE", snap_names[p->snap_index], ms); }
+    if (bdown & (1u << NB_B_MEMORY)) hud_text(p, "MEMORY", mem_nums[p->snap_index], ms);
+    if (bdown & (1u << NB_B_STORE)) { p->store_used = 0; hud_text(p, "STORE", mem_nums[p->snap_index], ms); }
     if ((bup & (1u << NB_B_STORE)) && !p->store_used)        /* a tap on STORE: SETUP, and back */
         go_page(p, p->page == NB_PG_SETUP ? NB_PG_LOOP : NB_PG_SETUP, ms);
     if (bdown & (1u << NB_B_RIBBON)) {
         if (p->morph_target >= 0) {
             char v[16] = "> ";
-            str_add(v, 2, snap_names[p->morph_target], sizeof v);
+            str_add(v, 2, mem_nums[p->morph_target], sizeof v);
             hud_text(p, "MORPH", v, ms);
         } else hud_knob(p, p->focus, ms);
     }
@@ -1006,31 +1370,22 @@ void nb_panel_update(nb_panel *p, const nb_controls *c_in)
     t->out_cut = 0; t->ret_cut = 0; t->chop = 0; t->scatter_hz = 0.f;
     int kick_held = 0, open_held = 0;
     uint8_t mask = 0; float color = -1.f;
-    if (remembering || storing) {
-        /* the sixteen white keys are the memories: MEMORY recalls, STORE keeps, MEMORY + RIBBON picks where a
-         * MORPH goes */
+    if (layer) layer_keys(p, c->keys, kdown);
+    else { p->listen = p->pull = p->iso = -1; p->flip = p->freeze = p->bypass = 0; }
+    if (layer) {
+        /* the keys belong to the view (layer_keys, above) */
+    } else if (storing) {
+        /* STORE held: the sixteen white keys keep the sound there */
         for (int key = 0; key < NB_NKEY; ++key) {
             int i = key_index(white_keys, 16, key);
             if (!((kdown >> key) & 1u) || i < 0 || i >= NB_NSNAP) continue;
-            if (storing) {
-                p->snaps[i] = p->cur;
-                p->snap_index = i;
-                p->store_used = 1;
-                store_commit(p, 1 << (i / NB_BANK_SNAPS));
-                hud_text(p, "STORED", snap_names[i], ms);
-            } else if (ribbon) {
-                if (p->morph_target == i) { p->morph_target = -1; hud_text(p, "MORPH", "OFF", ms); }
-                else {
-                    p->morph_target = i;
-                    p->morph_a = p->cur;
-                    char v[16] = "> ";
-                    str_add(v, 2, snap_names[i], sizeof v);
-                    hud_text(p, "MORPH", v, ms);
-                }
-            } else {
-                recall(p, i);
-                hud_text(p, "MEMORY", snap_names[i], ms);
-            }
+            p->snaps[i] = p->cur;
+            mark_stored(p, i);
+            p->edited = 0;
+            p->snap_index = i;
+            p->store_used = 1;
+            store_commit(p, 1 << (i / NB_BANK_SNAPS));
+            hud_text(p, "STORED", mem_nums[i], ms);
         }
     } else if (fxing) {
         /* FX held: the first twelve white keys are the twelve effects, in the chain's order */
@@ -1039,7 +1394,27 @@ void nb_panel_update(nb_panel *p, const nb_controls *c_in)
             if (!((kdown >> key) & 1u) || i < 0 || i >= NB_NLOOPFX) continue;
             p->last_fx = i; p->fx_used = 1;
             go_page(p, NB_PG_FX1 + i, ms);
+            p->fxk = i; p->fxk_t0 = ms; p->fxk_done = 0;
         }
+        /* a long press on the effect's key (600 ms): switched off (out of the path, its MIX kept) or on again; on
+         * again counts against the cap (FX FULL) */
+        if (p->fxk >= 0 && ((c->keys >> white_keys[p->fxk]) & 1u)) {
+            if (!p->fxk_done && ms - p->fxk_t0 >= 600u) {
+                int f = p->fxk, off = (p->cur.fx_off >> f) & 1u;
+                char v[16];
+                str_set(v, nb_fx_name(f), sizeof v);
+                if (off && p->cur.fx[f][3] > 0.f && nb_fx_load(&p->cur, f) + fx_cost_pct[f] > NB_FX_BUDGET) {
+                    p->fx_full = 1; p->fx_full_key = f; p->fx_full_ms = ms;
+                }
+                else {
+                    p->cur.fx_off = (uint16_t)(p->cur.fx_off ^ (1u << f));
+                    p->edited = 1;
+                    str_add(v, str_len(v), off ? " ON" : " OFF", sizeof v);
+                    hud_text(p, v, "", ms);
+                }
+                p->fxk_done = 1;
+            }
+        } else p->fxk = -1;
     } else if (modding) {
         for (int key = 0; key < NB_NKEY; ++key) {
             int w = key_index(white_keys, 16, key);
@@ -1051,47 +1426,72 @@ void nb_panel_update(nb_panel *p, const nb_controls *c_in)
         for (int key = 0; key < NB_NKEY; ++key) {
             if (!((kdown >> key) & 1u)) continue;
             float x = (float)key / 26.f;
-            if (p->morph_target >= 0) {
-                morph_apply(p, x);
-                char v[16];
-                fmt_num(v, sizeof v, x * 100.f, 0, 0, "%");
-                str_set(p->hud.title, "MORPH", sizeof p->hud.title);
-                str_set(p->hud.value, v, sizeof p->hud.value);
-                p->hud.bar = x; p->hud.bipolar = 0; p->hud.enc = -1;
-                hud_show(p, NB_HUD_KNOB, ms);
-            } else {
-                float before = nb_slot_value(p, p->focus);
-                slot_set(p, p->focus, x);
-                slot_t s = slot_of(p, p->focus);
-                if (p->rec && s.target >= 0) motion_touch(p, s.target, before);
-                hud_knob(p, p->focus, ms);
-            }
+            float before = nb_slot_value(p, p->focus);
+            slot_set(p, p->focus, x);
+            slot_t s = slot_of(p, p->focus);
+            if (p->rec && s.target >= 0) motion_touch(p, s.target, before);
+            hud_knob(p, p->focus, ms);
         }
     } else {
         for (int key = 0; key < NB_NKEY; ++key) {
+            if (view_key_is(key)) continue;                    /* the view key, not a pad */
             int hold = (c->keys >> key) & 1u, hit = (kdown >> key) & 1u;
             int w = key_index(white_keys, 16, key);
             if (w >= 0) {
-                if (hold) kick_held = 1;
-                if (hit) { mask |= kick_mask[w]; color = (float)w / 15.f; }
+                /* the memories, direct: a tap jumps, held the sound MORPHs toward it (MEM_GLIDE_MS to get there) */
+                if (hit && w < NB_NSNAP) {
+                    p->mem_key = w; p->mem_t0 = ms; p->morph_a = p->cur; p->morph_target = w;
+                    hud_text(p, "MEMORY", mem_nums[w], ms);
+                }
                 continue;
             }
             int g = key_index(black_keys, 11, key);
             if (g < 0 || !hold) continue;
             if (hit) p->last_gate_key = g;
-            if (g == G_CUT) t->out_cut = 1;
+            if (g <= G_ALL) {                                  /* the strikes: hold keeps the return open */
+                kick_held = 1;
+                if (hit) { mask |= g == G_ALL ? 15 : (uint8_t)(1u << g); color = 0.5f; }
+            }
+            else if (g == G_CUT) t->out_cut = 1;
             else if (g == G_OPEN) open_held = 1;
             else if (g == G_RETURN) t->ret_cut = 1;
         }
-        /* one cut-up at a time: the gate pad pressed last, while it is held */
+        /* one cut-up at a time: the one pressed last, while it is held */
         int lg = p->last_gate_key;
-        if (lg >= G_CHOP32 && ((c->keys >> black_keys[lg]) & 1u)) {
-            if (lg <= G_CHOP4) t->chop = 32 >> (lg - G_CHOP32);
-            else t->scatter_hz = (float)(4 << (lg - G_SC4));
+        int chop_held = (c->keys >> black_keys[G_CHOP]) & 1u, scat_held = (c->keys >> black_keys[G_SCATTER]) & 1u;
+        if (chop_held && (lg == G_CHOP || !scat_held)) t->chop = chop_steps[p->chop_sel];
+        else if (scat_held) t->scatter_hz = (float)scat_rates[p->scat_sel];
+    }
+    /* a memory's white key: held past a tap, the MORPH runs toward it; let go: a tap jumps there, else it stays */
+    if (p->mem_key >= 0) {
+        uint32_t dt = ms - p->mem_t0;
+        int down = !layer && !storing && !fxing && !modding && !ribbon && ((c->keys >> white_keys[p->mem_key]) & 1u);
+        if (down && dt > MEM_TAP_MS) {
+            float x = nb_clamp((float)(dt - MEM_TAP_MS) / (float)MEM_GLIDE_MS, 0.f, 1.f);
+            morph_apply(p, x);
+            char v[16];
+            fmt_num(v, sizeof v, x * 100.f, 0, 0, "%");
+            str_set(p->hud.title, "MORPH", sizeof p->hud.title);
+            str_set(p->hud.value, v, sizeof p->hud.value);
+            p->hud.bar = x; p->hud.bipolar = 0; p->hud.enc = -1;
+            hud_show(p, NB_HUD_KNOB, ms);
+        } else if (!down) {
+            if (dt <= MEM_TAP_MS || dt >= MEM_TAP_MS + MEM_GLIDE_MS) recall(p, p->mem_key);
+            else { p->morph_target = -1; p->edited = 1; }      /* let go half way: the sound stays there */
+            p->mem_key = -1;
         }
     }
     if (mask) { t->kick_mask |= mask; t->kick_color = color; }
     t->hold = p->drone || kick_held || open_held;
+
+    /* SETUP kept 1.5 s after its last change (a turn is many changes: one write, not one per detent), not only on
+     * leaving the page: a unit switched off on the SETUP page keeps it (found by tests/soak.c) */
+    if (p->setup_midi_ch != p->setup_seen_ch || p->setup_bright != p->setup_seen_bright
+        || p->setup_transition != p->setup_seen_transition) {
+        p->setup_seen_ch = p->setup_midi_ch; p->setup_seen_bright = p->setup_bright;
+        p->setup_seen_transition = p->setup_transition; p->setup_ms = ms;
+    }
+    if (p->setup_dirty && ms - p->setup_ms > 1500u) { p->setup_dirty = 0; store_commit(p, 1); }
 
     motion_run(p, ms);
 
@@ -1114,9 +1514,13 @@ void nb_panel_update(nb_panel *p, const nb_controls *c_in)
     q->cross = nb_knob_value(NB_K_CROSS, s->pos[NB_K_CROSS]);
     q->grito = nb_knob_value(NB_K_GRITO, s->pos[NB_K_GRITO]);
     q->level = p->level;
+    q->transition = 2.f * nb_clamp(p->setup_transition, 0.f, 1.f);
     q->hiss = s->hiss;
-    for (int f = 0; f < NB_NFX; ++f)
-        for (int k = 0; k < 4; ++k) q->fx[f][k] = nb_table17(nb_curve_fx[f][k], s->fx[f][k]);   /* the measured curves */
+    for (int f = 0; f < NB_NFX; ++f)      /* the measured curves are the orthodox's; the other stages linear until measured */
+        for (int k = 0; k < 4; ++k)
+            q->fx[f][k] = (s->stage[f] == 0 || k == 3) ? nb_table17(nb_curve_fx[f][k], s->fx[f][k]) : s->fx[f][k];
+    for (int f = 0; f < NB_NFX; ++f) q->fx_on[f] = (uint8_t)!((s->fx_off >> f) & 1u);   /* FX + a long press: off, on */
+    for (int f = 0; f <= NB_NFX; ++f) q->stage[f] = s->stage[f] < 3 ? s->stage[f] : 0;
     for (int i = 0; i < NB_CH; ++i) {
         q->ratio[i] = parts[s->partials][i];
         q->ch_gain[i] = s->ch_gain[i] * 1.5f;
@@ -1124,6 +1528,48 @@ void nb_panel_update(nb_panel *p, const nb_controls *c_in)
         q->ch_mid[i] = (s->ch_mid[i] - 0.5f) * 4.f;
         q->ch_level[i] = s->ch_level[i];
         for (int j = 0; j < NB_CH; ++j) q->matrix[i][j] = i == j ? 0.f : (s->send[i][j] - 0.5f) * 2.f;
+    }
+    /* the view layer, momentary, on what the loop plays (the engine glides each of these: no click) */
+    if (p->listen >= 0)
+        for (int i = 0; i < NB_CH; ++i) if (i != p->listen) q->ch_level[i] = 0.f;
+    if (p->pull >= 0) q->ch_gain[p->pull] = nb_clamp(q->ch_gain[p->pull] + 0.375f, 0.f, 1.5f);
+    for (int i = 0; i < NB_CH; ++i)
+        for (int j = 0; j < NB_CH; ++j) {
+            if (j == p->iso) q->matrix[i][j] = 0.f;
+            if (p->flip) q->matrix[i][j] = -q->matrix[i][j];
+        }
+    if (p->bypass) for (int f = 0; f < NB_NLOOPFX; ++f) q->fx[f][3] = 0.f;
+    {   /* the budget holds whatever brings a MIX up (a modulation, a motion lane, a morph, a stored sound): the
+         * effects in the sound itself first, then the others, in the chain's order, while they fit */
+        float load = fx_base_pct;
+        uint16_t cut = 0;
+        for (int pass = 0; pass < 2; ++pass)
+            for (int f = 0; f < NB_NFX; ++f) {
+                if (q->fx[f][3] <= 0.f || !q->fx_on[f] || (p->cur.fx[f][3] > 0.f) != (pass == 0)) continue;
+                if (load + fx_cost_pct[f] <= NB_FX_BUDGET) load += fx_cost_pct[f];
+                else { q->fx[f][3] = 0.f; cut |= (uint16_t)(1u << f); }
+            }
+        /* never a silent loss: an effect the sound has but the budget leaves out is said (FX LEFT OUT, the first
+         * one's name and how many more) when it starts being left out, and stays visible (hud.fx_cut, its key
+         * blinking under FX held) while it is */
+        p->fx_cut = cut;
+        uint16_t fresh = (uint16_t)(cut & ~p->fx_cut_said);
+        p->fx_cut_said = cut;
+        if (fresh) {
+            char v[16];
+            int n = 0, first = -1;
+            for (int f = 0; f < NB_NFX; ++f) if ((cut >> f) & 1u) { if (first < 0) first = f; ++n; }
+            int at = str_add(v, 0, nb_fx_name(first), sizeof v);
+            if (n > 1) { char m[6]; fmt_num(m, sizeof m, (float)(n - 1), 0, 0, ""); at = str_add(v, at, " +", sizeof v); str_add(v, at, m, sizeof v); }
+            hud_text(p, "FX LEFT OUT", v, ms);
+        }
+    }
+    if (p->fx_full) {   /* FX FULL, and how much is left */
+        char v[16];
+        float left = NB_FX_BUDGET - nb_fx_load(&p->cur, -1);
+        fmt_num(v, sizeof v, left > 0.f ? left : 0.f, 0, 0, "% LEFT");
+        p->fx_full = 0;
+        hud_text(p, "FX FULL", v, ms);
     }
 
     /* the screen's message */
@@ -1137,6 +1583,12 @@ void nb_panel_update(nb_panel *p, const nb_controls *c_in)
         h->bar = p->level; h->bipolar = 0;
     } else if (h->kind == NB_HUD_PAGE) {
         str_set(h->title, page_names[p->page], sizeof h->title);
+        if (p->page >= NB_PG_FX1 && p->page <= NB_PG_REVERB) {     /* the stage beside the name: FUZZ II */
+            int st = p->cur.stage[p->page - NB_PG_FX1];
+            int at = 0;
+            while (at < (int)sizeof h->title - 1 && h->title[at]) ++at;
+            str_add(h->title, at, stage_marks[st < 3 ? st : 0], sizeof h->title);
+        }
         for (int k = 0; k < 4; ++k) str_set(h->lines[k], slot_of(p, 2 + k).label, sizeof h->lines[k]);
     }
     if (p->splash) { p->splash = 0; h->kind = NB_HUD_SPLASH; h->t0 = ms; str_set(h->value, "FA\001SCA", sizeof h->value); }
@@ -1148,32 +1600,73 @@ void nb_panel_update(nb_panel *p, const nb_controls *c_in)
     h->motion_phase = p->cur.motion_ms ? (float)((ms - p->motion_t0) % p->cur.motion_ms) / (float)p->cur.motion_ms
                     : p->rec ? nb_clamp((float)(ms - p->rec_t0) / 8000.f, 0.f, 1.f) : 0.f;
     h->bright = 0.25f + 0.75f * nb_clamp(p->setup_bright, 0.f, 1.f);
-    uint32_t hold = h->kind == NB_HUD_SPLASH ? 3500u : 1100u;
-    h->alpha = h->kind == NB_HUD_NONE ? 0.f : age < hold ? 1.f : age < hold + 300u ? (float)(hold + 300u - age) / 300.f : 0.f;
+    /* shown while touched and 1 s after (the splash 3.5 s), then a 120 ms curtain (the face draws alpha as it) */
+    uint32_t hold = h->kind == NB_HUD_SPLASH ? 3500u : 1000u;
+    h->alpha = h->kind == NB_HUD_NONE ? 0.f : age < hold ? 1.f : age < hold + 120u ? (float)(hold + 120u - age) / 120.f : 0.f;
     if (p->hud_held && h->kind != NB_HUD_NONE && h->kind != NB_HUD_SPLASH) h->alpha = 1.f;
     if (h->alpha <= 0.f) h->kind = NB_HUD_NONE;
 
-    /* the LEDs: what is on */
+    screen_frame(p, c, ms, layer, remembering || storing || fxing || modding || ribbon);
+
+    /* the LEDs (docs: the light language): ON what is chosen or playing, DIM what is there but not in front, blinking
+     * calm (never faster than 4 Hz): a recording, an edited sound breathing, a cut-up at its rate, FX FULL's key */
     int any_mod = 0;
     for (int m = 0; m < NB_NMOD; ++m) if (p->cur.mod_t[m] != 0xff && p->cur.mod_d[m] != 0.f) { any_mod = 1; break; }
     for (int i = 0; i < NB_NLED; ++i) p->led[i] = 0;
-    if (p->page != NB_PG_SETUP) p->led[section_button[nb_section_of(p->page)]] = 1;
-    p->led[NB_B_DRONE] = (uint8_t)p->drone;
-    p->led[NB_B_STORE] = (uint8_t)(storing || p->page == NB_PG_SETUP);
-    p->led[NB_B_MEMORY] = (uint8_t)remembering;
-    p->led[NB_B_RIBBON] = (uint8_t)(ribbon || p->morph_target >= 0);
-    p->led[NB_B_MOD] = (uint8_t)(modding || any_mod);
-    p->led[NB_B_MOTION] = (uint8_t)(p->rec ? ((ms >> 7) & 1u) : p->cur.motion_ms != 0);
-    if (remembering || storing) {
-        p->led[14 + white_keys[p->snap_index]] = 1;
-        if (p->morph_target >= 0) p->led[14 + white_keys[p->morph_target]] = (uint8_t)((ms >> 8) & 1u);
+    const uint8_t ON = NB_LED_ON, DIM = NB_LED_DIM;
+    uint8_t slow = (ms >> 9) & 1u ? ON : DIM;                  /* about 1 Hz between the two levels: breathing */
+    if (p->page != NB_PG_SETUP) p->led[section_button[nb_section_of(p->page)]] = ON;
+    p->led[NB_B_DRONE] = p->drone ? ON : 0;
+    p->led[NB_B_STORE] = (storing || p->page == NB_PG_SETUP) ? ON : 0;
+    p->led[NB_B_MEMORY] = remembering ? ON : 0;
+    p->led[NB_B_RIBBON] = (ribbon || p->morph_target >= 0) ? ON : 0;
+    p->led[NB_B_MOD] = modding ? ON : any_mod ? DIM : 0;     /* modulations there: dim */
+    p->led[NB_B_MOTION] = p->rec ? (((ms >> 8) & 1u) ? ON : 0) : p->cur.motion_ms ? ON : 0;
+    uint8_t *K = p->led + 14;
+    if (layer) {
+        for (int w = 0; w < 12; ++w) K[white_keys[w]] = ON;
+        for (int g = 0; g < 5; ++g) K[black_keys[g]] = ON;
+        view_key_light(p);
+    } else if (storing) {
+        for (int i = 0; i < NB_NSNAP; ++i) K[white_keys[i]] = ((p->stored >> i) & 1u) ? DIM : 0;
+        K[white_keys[p->snap_index]] = ON;
     } else if (fxing) {
-        for (int f = 0; f < NB_NLOOPFX; ++f) if (p->cur.fx[f][3] > 0.f) p->led[14 + white_keys[f]] = 1;   /* the effects that are in */
-    } else if (modding) p->led[14 + white_keys[p->mod_sel]] = 1;
-    else if (ribbon) {
+        for (int f = 0; f < NB_NLOOPFX; ++f) if (p->cur.fx[f][3] > 0.f)     /* in: on; switched off: dim */
+            K[white_keys[f]] = ((p->fx_cut >> f) & 1u) ? (((ms >> 8) & 1u) ? ON : 0)   /* left out: blinking */
+                             : ((p->cur.fx_off >> f) & 1u) ? DIM : ON;
+        if (p->fx_full_key >= 0 && p->fx_full_key < NB_NLOOPFX && ms - p->fx_full_ms < 600u)
+            K[white_keys[p->fx_full_key]] = ((ms >> 7) & 1u) ? ON : 0;
+    } else if (modding) {
+        for (int m = 0; m < NB_NMOD; ++m)                     /* the sources in use: dim; the one chosen: on */
+            if (p->cur.mod_t[m] != 0xff && p->cur.mod_d[m] != 0.f && p->cur.mod_s[m] < NB_NSRC) K[white_keys[p->cur.mod_s[m]]] = DIM;
+        K[white_keys[p->mod_sel]] = ON;
+    } else if (ribbon) {
         int k = p->morph_target >= 0 ? -1 : (int)(nb_slot_value(p, p->focus) * 26.f + 0.5f);
-        if (k >= 0) p->led[14 + k] = 1;
-    } else for (int key = 0; key < NB_NKEY; ++key) p->led[14 + key] = (uint8_t)((c->keys >> key) & 1u);
+        if (k >= 0) K[k] = ON;
+    } else {
+        /* white: the memories (stored: dim; playing: on, breathing when edited); held: on */
+        for (int i = 0; i < NB_NSNAP; ++i) K[white_keys[i]] = ((p->stored >> i) & 1u) ? DIM : 0;
+        K[white_keys[p->snap_index]] = p->edited ? slow : ON;
+        /* the nodes: each loop's level as it is (on loud, dim singing quietly, off silent); ALL the loudest */
+        float most = 0.f;
+        for (int g = 0; g < 4; ++g) {
+            float lv = c->loud[g];
+            if (lv > most) most = lv;
+            K[black_keys[g]] = lv > 0.05f ? ON : lv > 0.002f ? DIM : 0;
+        }
+        K[black_keys[G_ALL]] = most > 0.05f ? ON : most > 0.002f ? DIM : 0;
+        /* the cuts: on while they act; CHOP and SCATTER blinking at their rate (4 Hz at most) */
+        if (t->out_cut) K[black_keys[G_CUT]] = ON;
+        if (t->ret_cut) K[black_keys[G_RETURN]] = ON;
+        if ((c->keys >> black_keys[G_OPEN]) & 1u) K[black_keys[G_OPEN]] = ON;
+        if (t->chop) K[black_keys[G_CHOP]] = ((ms / 125u) & 1u) ? ON : DIM;
+        if (t->scatter_hz > 0.f) {
+            uint32_t half = (uint32_t)(500.f / (t->scatter_hz < 4.f ? t->scatter_hz : 4.f));
+            K[black_keys[G_SCATTER]] = ((ms / (half ? half : 1u)) & 1u) ? ON : DIM;
+        }
+        K[black_keys[G_VIEW]] = p->view != NB_VIEW_SCOPE ? ON : 0;   /* a view other than the first is up */
+        for (int key = 0; key < NB_NKEY; ++key) if ((c->keys >> key) & 1u) K[key] = ON;
+    }
 
     p->prev_buttons = c->buttons;
     p->prev_keys = c->keys;
