@@ -71,7 +71,8 @@ touch a control, the screen says its name and its value, large, for about a seco
 <li><b>The screen says what you touched.</b> Name and value, large, for a moment; then the lamps.</li>
 </ol>
 <p>Touch a control on the map to see what it does alone, held and in combination. To keep beside the unit: the
-<a href="cheatsheet.html">cheat sheet</a>, one page to print.</p>
+<a href="cheatsheet.html">cheat sheet</a>, one page to print, and the <a href="labels.html">labels</a> for the panel, at
+true size, to cut and stick on.</p>
 <div class="mapslot" data-lang="en"></div>
 
 <h2><small>01</small>The knobs</h2>
@@ -93,8 +94,8 @@ step on when pressed again.</p>
 <tr><td>CHAN</td><td>One loop (LOOP 1 to 4; press again for the next): <span class="c">GAIN</span> its own gain, <span class="c">PITCH</span> ±24 semitones from its partial, <span class="c">MID</span> its band moved ±2 octaves from its pitch, <span class="c">LEVEL</span> its level in the output (at zero it is still in the network).</td></tr>
 <tr><td>MATRIX</td><td>The sends into one loop (INTO 1 to 4; press again for the next): <span class="c">FROM 1</span> to <span class="c">FROM 4</span>. Centre is nothing, right adds, left inverts. The loop's own FROM is its gain.</td></tr>
 <tr><td>SHAPE</td><td><span class="c">TOPOLOGY</span> the way the loops are joined: RING, PAIRS, CHAIN, STAR, ALL, TWIST. <span class="c">PARTIALS</span> how the four loops are tuned to MID: UNISON, FIFTHS, HARMONIC, ODD, OCTAVES, BELL, BAR.</td></tr>
-<tr><td>FX</td><td>One of the twelve effects, four knobs, the fourth its MIX (at zero the effect is out). Press again for the next effect; hold FX and press a white key, 1 to 12, to go straight to one: FUZZ, BLAST, FOLD, WRAP, RECTIFY, DIVIDE, RING, STARVE, SHIFT, ECHO, PUMP, SWEEP. While FX is held, the keys of the effects that are in light up.</td></tr>
-<tr><td>DELAY</td><td><span class="c">TIME</span> 10 to 120 ms, <span class="c">FEEDBACK</span>, <span class="c">TONE</span>, <span class="c">MIX</span>. A ping-pong delay after the network.</td></tr>
+<tr><td>FX</td><td>One of the twelve effects, four knobs, the fourth its MIX (at zero the effect is out). Hold FX and press an effect's white key long (600 ms) to switch it off, out of the path with its MIX kept, and long again to switch it back on; while FX is held the keys of the effects in are lit, those switched off blink. The effects in share the unit's processing budget: turning up a MIX from zero that would pass it is refused, and the screen says FX FULL with what is left. A sound that brings more effects than fit (a stored one, a morph, a modulation) never loses them silently: the screen says FX LEFT OUT with the first one's name, and their keys blink while FX is held. ECHO is a bucket brigade: turning its TIME bends the repeats instead of jumping, and they darken as they lengthen. Press again for the next effect; hold FX and press a white key, 1 to 12, to go straight to one: FUZZ, BLAST, FOLD, WRAP, RECTIFY, DIVIDE, RING, STARVE, SHIFT, ECHO, PUMP, SWEEP. While FX is held, the keys of the effects that are in light up.</td></tr>
+<tr><td>DELAY</td><td><span class="c">TIME</span> 10 to 120 ms, <span class="c">FEEDBACK</span>, <span class="c">TONE</span>, <span class="c">MIX</span>. A ping-pong delay after the network, its time gliding as a bucket brigade's clock does.</td></tr>
 <tr><td>REVERB</td><td><span class="c">SIZE</span>, <span class="c">DAMP</span>, <span class="c">WIDTH</span>, <span class="c">MIX</span>. A small, bright reverb after the network.</td></tr>
 <tr><td>MOD</td><td>The modulation sources' speeds: <span class="c">LFO 1</span> and <span class="c">LFO 2</span> (0.05 to 20 Hz), <span class="c">RANDOM</span> (how often it picks a new value), <span class="c">SMOOTH</span> (from steps to a slow glide).</td></tr>
 </table></div>
@@ -118,22 +119,36 @@ step on when pressed again.</p>
 <h2><small>03</small>The held buttons</h2>
 <div class="scroll"><table>
 <tr><td>DRONE</td><td>Latches the loops open, with a soft strike as it starts. Press again to let them close.</td></tr>
-<tr><td>MEMORY</td><td>Hold and press a white key, 1 to 16, to recall a sound: TETHER, EMBER, CHALK, DEW, SMOKE, DROUGHT, SILL, MILL, HUSK, NEEDLE, MOTH, GRAVEL, KITE, GRIST, TIDE, LANTERN. Each one sings by itself once DRONE is latched. The loops keep running across the change.</td></tr>
+<tr><td>MEMORY</td><td>The white keys are the sixteen memories, 1 to 16, nothing held; the screen says the number for a second. A tap recalls one (the loops keep running). Hold STORE (REC) and press a white key to keep the sound there.</td></tr>
 <tr><td>STORE</td><td>Hold and press a white key, 1 to 16, to keep the current sound there. A tap on STORE alone opens SETUP; another tap closes it.</td></tr>
 <tr><td>RIBBON</td><td>Hold: the 27 keys become positions of the last knob you touched, from the lowest key (minimum) to the highest (maximum). Touch one to jump there, slide to sweep.</td></tr>
-<tr><td>MORPH</td><td>Hold MEMORY and RIBBON and press a white key: that memory becomes the MORPH target (the same key again turns it off). Then RIBBON and the keys move the whole sound from where it was toward that memory.</td></tr>
+<tr><td>MORPH</td><td>Hold a memory's white key: the whole sound moves toward that memory while you hold it, there in about 1.5 s. Let go half way and it stays half way (the memory itself is not changed); a short tap jumps.</td></tr>
 <tr><td>LFO</td><td>Hold and turn a knob: instead of its value you set how much a source moves it, to either side (eight per sound). Hold LFO and press a white key, 1 to 4, to choose the source: LFO 1 (triangle), LFO 2 (square), RANDOM, FOLLOW (the network's own level). Turning back to zero frees it; two quick taps on MOD clear every modulation.</td></tr>
 <tr><td>MOTION</td><td>Hold and move knobs: the gestures are recorded, and when you let go they repeat in a loop as long as you held (up to 8 s). Hold again to record over one knob; the others keep playing. A tap on MOTION alone stops and clears it.</td></tr>
 </table></div>
 
 <h2><small>04</small>The pads</h2>
 <div class="scroll"><table>
-<tr><td>White</td><td><span class="c">KICK</span>. A strike of noise into one, two or all four loops (the legend says which). Left pads are dark and long, right pads bright and short. While a pad is held the loops' way back stays open: above unity they sing while you hold, below unity they ring and fade.</td></tr>
+<tr><td>NODE 1&ndash;4</td><td>The first four black keys: a strike of noise into that loop alone. While a node is held the return stays open, a drone of one hand.</td></tr>
+<tr><td>ALL</td><td>The fifth black key: a strike into the four loops.</td></tr>
 <tr><td>CUT</td><td>Silence while held. The loops keep running underneath; DELAY and REVERB ring on.</td></tr>
 <tr><td>OPEN</td><td>Holds the loops open without a strike.</td></tr>
 <tr><td>RETURN</td><td>Cuts the way back: the loops die, and are reborn when you let go.</td></tr>
-<tr><td>CHOP</td><td>Cuts the sound in its own rhythm: every 32, 16, 8 or 4 crossings of the wave. The rhythm follows the pitch.</td></tr>
-<tr><td>SCATTER</td><td>Random cuts, about 4, 8, 16 or 32 per second.</td></tr>
+<tr><td>CHOP</td><td>Cuts the sound in its own rhythm while held: every 16 crossings of the wave; hold it and turn K1 for 32, 16, 8 or 4. The rhythm follows the pitch.</td></tr>
+<tr><td>SCATTER</td><td>Random cuts while held, about 8 per second; hold it and turn K1 for 4, 8, 16 or 32.</td></tr>
+<tr><td>VIEW</td><td>The last black key (F#5). A tap: the next view of the screen, LOOPS, WAVES, MATRIX, CHAIN, TETRA. Held: K1 steps the views; white keys 1 to 4 LISTEN to one loop, 5 to 8 PULL one up, 9 to 12 ISOLATE one; the first five black keys FLIP the sends, FREEZE, BYPASS the effects, SPIN the network back or on.</td></tr>
+</table></div>
+
+<h3>The lights</h3>
+<p>The lights say what is true now, in two levels and a calm blink: <b>on</b> is what is chosen or playing, <b>dim</b> is what is there but not in front.</p>
+<div class="scroll"><table>
+<tr><td>White keys</td><td>The memory playing on; it breathes slowly once you have changed the sound. The memories holding a sound you stored, dim.</td></tr>
+<tr><td>N1&ndash;N4, ALL</td><td>Each loop's level as it sounds: on when it is loud, dim when it sings quietly, off when it is silent. ALL follows the loudest.</td></tr>
+<tr><td>CUT, RETURN, OPEN</td><td>On while they act. CHOP and SCATTER blink at their rate (never faster than four times a second).</td></tr>
+<tr><td>VIEW</td><td>On when a view other than the first (SCOPE) is up.</td></tr>
+<tr><td>FX held</td><td>The effects in, on; those switched off, dim; those the processing budget leaves out, blinking. FX FULL flashes the key of the effect it refused.</td></tr>
+<tr><td>LFO held</td><td>The source chosen on, the sources in use dim. The LFO button stays dim while the sound has modulations.</td></tr>
+<tr><td>MOTION</td><td>Blinks while recording, on while a loop plays.</td></tr>
 </table></div>
 
 <h2><small>05</small>The screen</h2>
@@ -195,7 +210,8 @@ a tela mostra o nome e o valor dele, grandes, por cerca de um segundo; depois vo
 <li><b>A tela diz o que você tocou.</b> Nome e valor, grandes, por um instante; depois as lâmpadas.</li>
 </ol>
 <p>Toque num controle do mapa para ver o que ele faz sozinho, segurado e em combinação. Para ter ao lado do aparelho:
-a <a href="cheatsheet.html">folha de consulta</a>, uma página para imprimir.</p>
+a <a href="cheatsheet.html">folha de consulta</a>, uma página para imprimir, e os <a href="labels.html">rótulos</a> do
+painel, em tamanho real, para recortar e colar.</p>
 <div class="mapslot" data-lang="pt"></div>
 
 <h2><small>01</small>Os knobs</h2>
@@ -218,7 +234,7 @@ avançam quando apertados de novo.</p>
 <tr><td>MATRIX</td><td>Os envios que chegam a um laço (INTO 1 a 4; aperte de novo para o próximo): <span class="c">FROM 1</span> a <span class="c">FROM 4</span>. No centro, nada; à direita soma, à esquerda inverte. O FROM do próprio laço é o seu ganho.</td></tr>
 <tr><td>SHAPE</td><td><span class="c">TOPOLOGY</span> o jeito de ligar os laços: RING, PAIRS, CHAIN, STAR, ALL, TWIST. <span class="c">PARTIALS</span> como os quatro laços se afinam em relação ao MID: UNISON, FIFTHS, HARMONIC, ODD, OCTAVES, BELL, BAR.</td></tr>
 <tr><td>FX</td><td>Um dos doze efeitos, quatro knobs, o quarto é o MIX (no zero o efeito sai). Aperte de novo para o próximo; segure FX e aperte uma tecla branca, de 1 a 12, para ir direto a um: FUZZ, BLAST, FOLD, WRAP, RECTIFY, DIVIDE, RING, STARVE, SHIFT, ECHO, PUMP, SWEEP. Com o FX seguro, acendem as teclas dos efeitos que estão ligados.</td></tr>
-<tr><td>DELAY</td><td><span class="c">TIME</span> de 10 a 120 ms, <span class="c">FEEDBACK</span>, <span class="c">TONE</span>, <span class="c">MIX</span>. Um delay pingue-pongue depois da rede.</td></tr>
+<tr><td>DELAY</td><td><span class="c">TIME</span> de 10 a 120 ms, <span class="c">FEEDBACK</span>, <span class="c">TONE</span>, <span class="c">MIX</span>. Um delay pingue-pongue depois da rede, o tempo deslizando como o relógio de um bucket brigade.</td></tr>
 <tr><td>REVERB</td><td><span class="c">SIZE</span>, <span class="c">DAMP</span>, <span class="c">WIDTH</span>, <span class="c">MIX</span>. Um reverb pequeno e claro depois da rede.</td></tr>
 <tr><td>MOD</td><td>As velocidades das fontes de modulação: <span class="c">LFO 1</span> e <span class="c">LFO 2</span> (0,05 a 20 Hz), <span class="c">RANDOM</span> (de quanto em quanto tempo sorteia um valor novo), <span class="c">SMOOTH</span> (de degraus a um deslizar lento).</td></tr>
 </table></div>
@@ -242,22 +258,35 @@ avançam quando apertados de novo.</p>
 <h2><small>03</small>Os botões de segurar</h2>
 <div class="scroll"><table>
 <tr><td>DRONE</td><td>Trava os laços abertos, com um golpe suave ao ligar. Aperte de novo para deixá-los fechar.</td></tr>
-<tr><td>MEMORY</td><td>Segure e aperte uma tecla branca, de 1 a 16, para chamar um som: TETHER, EMBER, CHALK, DEW, SMOKE, DROUGHT, SILL, MILL, HUSK, NEEDLE, MOTH, GRAVEL, KITE, GRIST, TIDE, LANTERN. Cada um canta sozinho com o DRONE travado. Os laços seguem rodando na troca.</td></tr>
+<tr><td>MEMORY</td><td>As teclas brancas são as dezesseis memórias, de 1 a 16, sem nada seguro; a tela diz o número por um segundo. Um toque chama uma (os laços seguem rodando). Segure STORE (REC) e aperte uma branca para guardar ali o som.</td></tr>
 <tr><td>STORE</td><td>Segure e aperte uma tecla branca, de 1 a 16, para guardar ali o som de agora. Um toque só no STORE abre o SETUP; outro toque fecha.</td></tr>
 <tr><td>RIBBON</td><td>Segure: as 27 teclas viram posições do último knob mexido, da tecla mais grave (mínimo) à mais aguda (máximo). Toque uma para saltar até ela; deslize para varrer.</td></tr>
-<tr><td>MORPH</td><td>Segure MEMORY e RIBBON e aperte uma tecla branca: aquela memória vira o destino do MORPH (a mesma tecla de novo desliga). Depois, o RIBBON e as teclas levam o som inteiro de onde estava até aquela memória.</td></tr>
+<tr><td>MORPH</td><td>Segure a branca de uma memória: o som inteiro anda até ela enquanto você segura, chegando em cerca de 1,5 s. Soltou no meio, fica no meio (a memória não muda); um toque curto salta.</td></tr>
 <tr><td>LFO</td><td>Segure e gire um knob: em vez do valor, você define quanto uma fonte o move, para qualquer lado (oito por som). Segure LFO e aperte uma tecla branca, de 1 a 4, para escolher a fonte: LFO 1 (triângulo), LFO 2 (quadrada), RANDOM, FOLLOW (o nível da própria rede). Voltar ao zero libera; dois toques rápidos no MOD limpam todas as modulações.</td></tr>
 <tr><td>MOTION</td><td>Segure e mexa nos knobs: os gestos são gravados e, ao soltar, repetem num laço do tamanho do que você segurou (até 8 s). Segure de novo para regravar um knob; os outros seguem. Um toque só no MOTION para e limpa.</td></tr>
 </table></div>
 
 <h2><small>04</small>Os pads</h2>
 <div class="scroll"><table>
-<tr><td>Brancos</td><td><span class="c">KICK</span>. Um golpe de ruído em um, dois ou nos quatro laços (a legenda diz quais). Os da esquerda são escuros e longos; os da direita, claros e curtos. Enquanto um pad está apertado, a volta dos laços fica aberta: acima da unidade eles cantam enquanto você segura; abaixo, ressoam e somem.</td></tr>
+<tr><td>NODE 1&ndash;4</td><td>As quatro primeiras pretas: um golpe de ruído só naquele laço. Enquanto um nó está seguro, o retorno fica aberto: um drone de uma mão.</td></tr>
+<tr><td>ALL</td><td>A quinta preta: um golpe nos quatro laços.</td></tr>
 <tr><td>CUT</td><td>Silêncio enquanto segurado. Os laços seguem rodando por baixo; DELAY e REVERB continuam soando.</td></tr>
 <tr><td>OPEN</td><td>Mantém os laços abertos sem golpe.</td></tr>
 <tr><td>RETURN</td><td>Corta a volta: os laços morrem e renascem quando você solta.</td></tr>
-<tr><td>CHOP</td><td>Recorta o som no ritmo dele mesmo: a cada 32, 16, 8 ou 4 passagens da onda. O ritmo segue a altura.</td></tr>
-<tr><td>SCATTER</td><td>Cortes ao acaso, cerca de 4, 8, 16 ou 32 por segundo.</td></tr>
+<tr><td>CHOP</td><td>Recorta o som no ritmo dele mesmo enquanto seguro: a cada 16 passagens da onda; segure e gire o K1 para 32, 16, 8 ou 4. O ritmo segue a altura.</td></tr>
+<tr><td>SCATTER</td><td>Cortes ao acaso enquanto seguro, cerca de 8 por segundo; segure e gire o K1 para 4, 8, 16 ou 32.</td></tr>
+</table></div>
+
+<h3>As luzes</h3>
+<p>As luzes dizem o que é verdade agora, em dois níveis e uma piscada calma: <b>acesa</b> é o que está escolhido ou tocando, <b>meia-luz</b> é o que está lá mas não na frente.</p>
+<div class="scroll"><table>
+<tr><td>Teclas brancas</td><td>A memória que toca acesa; ela respira devagar depois que você mudou o som. As memórias com um som que você guardou, em meia-luz.</td></tr>
+<tr><td>N1&ndash;N4, ALL</td><td>O nível de cada laço como soa: acesa quando está forte, meia-luz quando canta baixo, apagada quando calado. O ALL segue o mais forte.</td></tr>
+<tr><td>CUT, RETURN, OPEN</td><td>Acesas enquanto agem. CHOP e SCATTER piscam na sua velocidade (nunca mais que quatro vezes por segundo).</td></tr>
+<tr><td>VIEW</td><td>Acesa quando uma vista que não a primeira (SCOPE) está na tela.</td></tr>
+<tr><td>FX seguro</td><td>Os efeitos ligados, acesos; os desligados, em meia-luz; os que o orçamento de processamento deixa de fora, piscando. O FX FULL pisca a tecla do efeito que recusou.</td></tr>
+<tr><td>LFO seguro</td><td>A fonte escolhida acesa, as fontes em uso em meia-luz. O botão LFO fica em meia-luz enquanto o som tem modulações.</td></tr>
+<tr><td>MOTION</td><td>Pisca enquanto grava, acesa enquanto um laço toca.</td></tr>
 </table></div>
 
 <h2><small>05</small>A tela</h2>
@@ -322,7 +351,7 @@ controle (ou aperte LEARN e clique nele) e mexa num controle do seu aparelho MID
    ["GAIN","knob","left","PRESETS","CC 26",{en:["How much each loop gives back. Past the middle the loops sing on their own.","",KNOB_WITH.en],pt:["Quanto cada laço devolve. Depois do meio, os laços cantam sozinhos.","",KNOB_WITH.pt]}],
    ["SCREAM","knob","left","ALGORITHM","CC 25",{en:["The output bends the loops' own delays: from a rough edge to a scream.","",KNOB_WITH.en],pt:["A saída curva os atrasos dos próprios laços: de uma aspereza a um grito.","",KNOB_WITH.pt]}],
    ["MOTION","btn","left","OCT−","NOTE 36",{en:["A tap: stops the motion loop and clears it.","Knob gestures are recorded; on release they repeat in a loop as long as the hold (up to 8 s). Held again: records over the knobs you move.","With knobs turned while it is held: those knobs are written into the loop."],pt:["Um toque: para o laço de motion e o limpa.","Os gestos dos knobs são gravados; ao soltar, repetem num laço do tamanho do que foi seguro (até 8 s). Seguro de novo: regrava os knobs que você mexer.","Com knobs girados enquanto está seguro: esses knobs entram no laço."]}],
-   ["RIBBON","btn","left","OCT+","NOTE 37",{en:["","The 27 keys are positions of the last knob touched, lowest key minimum, highest maximum. Slide to sweep.","With MEMORY held + a white key: chooses the MORPH target. With a MORPH target set: the keys move the whole sound toward that memory."],pt:["","As 27 teclas são posições do último knob mexido, a mais grave o mínimo, a mais aguda o máximo. Deslize para varrer.","Com MEMORY seguro + uma tecla branca: escolhe o destino do MORPH. Com um destino escolhido: as teclas levam o som inteiro até aquela memória."]}],
+   ["RIBBON","btn","left","OCT+","NOTE 37",{en:["","The 27 keys are positions of the last knob touched, lowest key minimum, highest maximum. Slide to sweep.",""],pt:["","As 27 teclas são posições do último knob mexido, a mais grave o mínimo, a mais aguda o máximo. Deslize para varrer.",""]}],
    ["SCREEN","scr","screen","","",{en:["Four lamps, one per loop: the loop as heard, a red ring when its preamp saturates, the sends as lines. A touched control is written large with its value.","While MEMORY, STORE, FX, RIBBON or LFO is held, the message stays.",""],pt:["Quatro lâmpadas, uma por laço: o laço como se ouve, um anel vermelho quando o pré satura, os envios como linhas. Um controle tocado aparece grande com o valor.","Enquanto MEMORY, STORE, FX, RIBBON ou LFO estão seguros, a mensagem fica.",""]}],
    ["K1","knob","k","encoder 1","CC 20",{en:["The first knob of the lit section (LOOP: MID).","",KNOB_WITH.en],pt:["O primeiro knob da seção acesa (LOOP: MID).","",KNOB_WITH.pt]}],
    ["K2","knob","k","encoder 2","CC 21",{en:["The second knob of the lit section (LOOP: FOCUS).","",KNOB_WITH.en],pt:["O segundo knob da seção acesa (LOOP: FOCUS).","",KNOB_WITH.pt]}],
@@ -332,7 +361,7 @@ controle (ou aperte LEARN e clique nele) e mexa num controle do seu aparelho MID
    ["CHAN","btn","r1","SCL","NOTE 39",{en:["Section CHAN: one loop's GAIN, PITCH, MID, LEVEL. Pressed again: the next loop.","",""],pt:["Seção CHAN: GAIN, PITCH, MID, LEVEL de um laço. Apertado de novo: o próximo laço.","",""]}],
    ["MATRIX","btn","r1","ENV","NOTE 40",{en:["Section MATRIX: the sends into one loop, FROM 1 to FROM 4. Pressed again: the next loop.","",""],pt:["Seção MATRIX: os envios para dentro de um laço, FROM 1 a FROM 4. Apertado de novo: o próximo laço.","",""]}],
    ["SHAPE","btn","r1","LFO","NOTE 41",{en:["Section SHAPE: TOPOLOGY, PARTIALS.","",""],pt:["Seção SHAPE: TOPOLOGY, PARTIALS.","",""]}],
-   ["MEMORY","btn","r1","EDIT","NOTE 42",{en:["","White keys 1 to 16 recall the sixteen sounds; the loops keep running.","With RIBBON also held + a white key: that memory becomes the MORPH target (again: off)."],pt:["","As teclas brancas 1 a 16 chamam os dezesseis sons; os laços seguem rodando.","Com RIBBON também seguro + uma tecla branca: aquela memória vira o destino do MORPH (de novo: desliga)."]}],
+   ["EDIT","btn","r1","EDIT","NOTE 42",{en:["Free for now: a touch says the memory playing.","",""],pt:["Livre por ora: um toque diz a memória que toca.","",""]}],
    ["LFO","btn","r1","GLO","NOTE 43",{en:["Two quick taps: every modulation of the sound is cleared.","Turn a knob: its modulation depth, to either side (eight per sound). White keys 1 to 4: the source, LFO 1, LFO 2, RANDOM, FOLLOW.","Turning a depth back to zero frees that modulation."],pt:["Dois toques rápidos: todas as modulações do som são limpas.","Gire um knob: a profundidade da modulação dele, para qualquer lado (oito por som). Teclas brancas 1 a 4: a fonte, LFO 1, LFO 2, RANDOM, FOLLOW.","Voltar a profundidade ao zero libera aquela modulação."]}],
    ["FX","btn","r2","HOME","NOTE 44",{en:["Section FX: one effect's four knobs, the fourth its MIX. Pressed again: the next effect.","White keys 1 to 12: go straight to FUZZ, BLAST, FOLD, WRAP, RECTIFY, DIVIDE, RING, STARVE, SHIFT, ECHO, PUMP, SWEEP. The keys of the effects that are in light up.",""],pt:["Seção FX: os quatro knobs de um efeito, o quarto é o MIX. Apertado de novo: o próximo efeito.","Teclas brancas 1 a 12: vai direto a FUZZ, BLAST, FOLD, WRAP, RECTIFY, DIVIDE, RING, STARVE, SHIFT, ECHO, PUMP, SWEEP. Acendem as teclas dos efeitos ligados.",""]}],
    ["DELAY","btn","r2","SAVE","NOTE 45",{en:["Section DELAY: TIME, FEEDBACK, TONE, MIX.","",""],pt:["Seção DELAY: TIME, FEEDBACK, TONE, MIX.","",""]}],
@@ -340,8 +369,8 @@ controle (ou aperte LEARN e clique nele) e mexa num controle do seu aparelho MID
    ["MOD","btn","r2","SEQ","NOTE 47",{en:["Section MOD: the speeds of LFO 1, LFO 2 and RANDOM, and SMOOTH.","",""],pt:["Seção MOD: as velocidades do LFO 1, LFO 2 e RANDOM, e o SMOOTH.","",""]}],
    ["DRONE","btn","r2","PLAY","NOTE 48",{en:["Latches the loops open, with a soft strike. Again: lets them close.","",""],pt:["Trava os laços abertos, com um golpe suave. De novo: deixa-os fechar.","",""]}],
    ["STORE","btn","r2","REC","NOTE 49",{en:["A tap: SETUP (MIDI CH, BRIGHT). Another tap: back.","White keys 1 to 16: keep the current sound there.",""],pt:["Um toque: SETUP (MIDI CH, BRIGHT). Outro toque: volta.","Teclas brancas 1 a 16: guarda ali o som de agora.",""]}],
-   ["BLACK PADS","pad","pb","black keys","NOTE 54, 56 …",{en:["CUT, OPEN, RETURN, CHOP 32/16/8/4, SCATTER 4/8/16/32. Each acts only while held.","Of CHOP and SCATTER, the one pressed last plays.",""],pt:["CUT, OPEN, RETURN, CHOP 32/16/8/4, SCATTER 4/8/16/32. Cada um age só enquanto seguro.","Entre CHOP e SCATTER, vale o último apertado.",""]}],
-   ["WHITE PADS","pad","pw","white keys","NOTE 53, 55 …",{en:["KICK: a strike into one, two or four loops, dark on the left, bright on the right.","Held: the loops' way back stays open; above unity they sing until you let go.","With MEMORY or STORE: memories 1 to 16. With FX: effects 1 to 12. With LFO: sources 1 to 4. With RIBBON: positions."],pt:["KICK: um golpe em um, dois ou quatro laços, escuro à esquerda, claro à direita.","Seguro: a volta dos laços fica aberta; acima da unidade eles cantam até você soltar.","Com MEMORY ou STORE: memórias 1 a 16. Com FX: efeitos 1 a 12. Com LFO: fontes 1 a 4. Com RIBBON: posições."]}],
+   ["BLACK PADS","pad","pb","black keys","NOTE 54, 56 …",{en:["NODE 1-4 strike their loop, ALL the four; CUT, CHOP, SCATTER, RETURN, OPEN act while held; the last (F#5) is VIEW: a tap shows the next view.","A node held keeps its return open. CHOP or SCATTER held + K1: their rate. VIEW held: K1 steps the views, white keys 1-12 LISTEN, PULL, ISOLATE a loop, the first five black keys FLIP, FREEZE, BYPASS, SPIN.",""],pt:["NODE 1-4 golpeiam o seu laço, ALL os quatro; CUT, CHOP, SCATTER, RETURN, OPEN agem enquanto seguros; a última (F#5) é VIEW: um toque mostra a próxima vista.","Um nó seguro mantém o retorno aberto. CHOP ou SCATTER seguro + K1: a velocidade. VIEW seguro: K1 anda pelas vistas, brancas 1-12 LISTEN, PULL, ISOLATE um laço, as cinco primeiras pretas FLIP, FREEZE, BYPASS, SPIN.",""]}],
+   ["WHITE PADS","pad","pw","white keys","NOTE 53, 55 …",{en:["The sixteen memories: a tap recalls one.","Held: the sound MORPHs toward that memory, there in about 1.5 s; let go half way, it stays.","With STORE held: keep the sound there. With FX held: the effects (long: off/on). With LFO held: the sources."],pt:["As dezesseis memórias: um toque chama uma.","Segurada: o som faz MORPH até aquela memória, chegando em cerca de 1,5 s; soltou no meio, fica.","Com STORE seguro: guarda ali o som. Com FX seguro: os efeitos (longo: desliga/liga). Com LFO seguro: as fontes."]}],
   ];
   const T={en:{alone:"ALONE",held:"HELD",with:"WITH",unit:"On the unit",none:"—"},pt:{alone:"SOZINHO",held:"SEGURADO",with:"EM COMBINAÇÃO",unit:"No aparelho",none:"—"}};
   for(const slot of document.querySelectorAll(".mapslot")){
