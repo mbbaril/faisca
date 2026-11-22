@@ -65,7 +65,10 @@
       <a class="text-link" href="cheatsheet.html">Cheat sheet <span aria-hidden="true">↗</span></a></article>
     <article><span class="num">03 / Install</span><h3>Not released yet.</h3>
       <p>The device firmware is being built and tested in stages, each one checked on the hardware before the next.
-      Nothing is offered to install until it is finished. Read the risks and the ways back first.</p>
+      Nothing is offered to install until it is finished. It is built on fm1-base and felucca-bsp: if it fails to start
+      twice, the platform comes up in a safe mode, without sound but still reachable over USB, from which it can be
+      installed again or the official firmware put back. A safety net, not a guarantee: read the
+      <a href="recovery.html">ways back</a> and the risks first.</p>
       <a class="text-link off" href="#device">Status and risks <span aria-hidden="true">↓</span></a></article>
   </div>
   <p class="action-note">You need a recent browser to play; Chrome or Edge for MIDI. For the device, when there is a
@@ -195,7 +198,10 @@
       <a class="text-link" href="cheatsheet.html">Folha de consulta <span aria-hidden="true">↗</span></a></article>
     <article><span class="num">03 / Instalar</span><h3>Ainda não lançado.</h3>
       <p>O firmware do aparelho está sendo construído e testado por etapas, cada uma conferida no aparelho antes da
-      seguinte. Nada é oferecido para instalar até ele ficar pronto. Leia antes os riscos e os caminhos de volta.</p>
+      seguinte. Nada é oferecido para instalar até ele ficar pronto. Ele é construído sobre o fm1-base e o felucca-bsp:
+      se falhar duas vezes ao ligar, a plataforma sobe num modo seguro, sem som mas ainda alcançável pela USB, de onde
+      dá para instalar de novo ou devolver o firmware oficial. Uma rede de proteção, não uma garantia: leia antes os
+      <a href="recovery.html">caminhos de volta</a> e os riscos.</p>
       <a class="text-link off" href="#device">Estado e riscos <span aria-hidden="true">↓</span></a></article>
   </div>
   <p class="action-note">Você precisa de um navegador recente para tocar; Chrome ou Edge para MIDI. Para o aparelho,
@@ -299,14 +305,27 @@
     replaces the unit's firmware and can leave the unit unable to start. You flash it
     entirely at your own risk. The software is provided without warranty of any kind (GNU General Public License,
     sections 15 and 16). Back up everything first, and do not install it on a unit you cannot afford to have out of
-    service while it is recovered. There is no release to install yet; the firmware's base platform may still change,
-    so the exact steps will be published with the first release.</p>
+    service while it is recovered. There is no release to install yet; the exact steps will be published with the
+    first release.</p>
     <p data-l="pt">O FAÍSCA é um firmware não oficial, que não foi feito, revisado nem tem suporte do fabricante do FM-1.
     Instalá-lo substitui o firmware da unidade e pode deixá-la sem ligar. A
     gravação é feita inteiramente por sua conta e risco. O software vem sem garantia de nenhum tipo (Licença Pública
     Geral GNU, seções 15 e 16). Faça backup de tudo antes e não o instale numa unidade que não possa ficar parada
-    enquanto é recuperada. Ainda não há versão para instalar; a plataforma do firmware ainda pode mudar, então os passos
-    exatos sairão com a primeira versão.</p>
+    enquanto é recuperada. Ainda não há versão para instalar; os passos exatos sairão com a primeira versão.</p>
+  </div>
+  <div class="notice plain">
+    <span data-l="en">THE PLATFORM</span><span data-l="pt">A PLATAFORMA</span>
+    <p data-l="en">The device firmware is built on <a href="https://github.com/charlesvestal/fm1-base">fm1-base</a> and
+    <a href="https://github.com/hugelton/felucca-bsp">felucca-bsp</a>. If a firmware on this platform fails to start
+    twice in a row, the platform comes up in a safe mode: no sound, but USB still works, so the firmware can be installed
+    again or the official firmware put back. This is how the platform behaves, not a promise that a unit cannot fail:
+    the <a href="recovery.html">recovery page</a> has every way back, up to a unit that shows nothing at all.</p>
+    <p data-l="pt">O firmware do aparelho é construído sobre o <a href="https://github.com/charlesvestal/fm1-base">fm1-base</a>
+    e o <a href="https://github.com/hugelton/felucca-bsp">felucca-bsp</a>. Se um firmware desta plataforma falha duas
+    vezes seguidas ao ligar, a plataforma sobe num modo seguro: sem som, mas com a USB funcionando, então dá para instalar
+    o firmware de novo ou devolver o firmware oficial. É assim que a plataforma se comporta, não uma promessa de que uma
+    unidade não possa falhar: a <a href="recovery.html">página de recuperação</a> tem todos os caminhos de volta, até o
+    de uma unidade que não mostra nada.</p>
   </div>
   <div class="cards">
     <article class="card"><div class="num"><span data-l="en">01 / The ways back</span><span data-l="pt">01 / Os caminhos de volta</span></div>

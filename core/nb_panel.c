@@ -563,7 +563,7 @@ static void hud_text(nb_panel *p, const char *title, const char *value, uint32_t
 static void hud_mod(nb_panel *p, int enc, uint32_t ms)
 {
     slot_t s = slot_of(p, enc);
-    char t[16] = "MOD ";
+    char t[16] = "LFO ";
     str_add(t, 4, s.label, sizeof t);
     str_set(p->hud.title, t, sizeof p->hud.title);
     int m = s.target >= 0 ? mod_find(&p->cur, s.target) : -1;
@@ -902,11 +902,11 @@ void nb_panel_update(nb_panel *p, const nb_controls *c_in)
     }
 
     /* MOD: held, a turned knob gets a depth instead of a value; two taps clear everything */
-    if (bdown & (1u << NB_B_MOD)) { p->mod_used = 0; hud_text(p, "MOD", src_names[p->mod_sel], ms); }
+    if (bdown & (1u << NB_B_MOD)) { p->mod_used = 0; hud_text(p, "LFO", src_names[p->mod_sel], ms); }
     if ((bup & (1u << NB_B_MOD)) && !p->mod_used) {
         if (ms - p->mod_tap_ms < 450u) {
             for (int m = 0; m < NB_NMOD; ++m) { p->cur.mod_t[m] = 0xff; p->cur.mod_d[m] = 0.f; }
-            hud_text(p, "MOD", "CLEAR", ms);
+            hud_text(p, "LFO", "CLEAR", ms);
             p->mod_tap_ms = 0;
         } else p->mod_tap_ms = ms;
     }
@@ -1045,7 +1045,7 @@ void nb_panel_update(nb_panel *p, const nb_controls *c_in)
             int w = key_index(white_keys, 16, key);
             if (!((kdown >> key) & 1u) || w < 0 || w >= NB_NSRC) continue;
             p->mod_sel = w; p->mod_used = 1;
-            hud_text(p, "MOD", src_names[w], ms);
+            hud_text(p, "LFO", src_names[w], ms);
         }
     } else if (ribbon) {
         for (int key = 0; key < NB_NKEY; ++key) {
