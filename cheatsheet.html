@@ -50,8 +50,8 @@
 <tr><td>CHAN</td><td>GAIN PITCH MID LEVEL <span data-l="en">(again: next loop)</span><span data-l="pt">(de novo: próximo laço)</span></td></tr>
 <tr><td>MATRIX</td><td>FROM 1 FROM 2 FROM 3 FROM 4 <span data-l="en">(again: next)</span><span data-l="pt">(de novo: próximo)</span></td></tr>
 <tr><td>SHAPE</td><td>TOPOLOGY PARTIALS</td></tr>
-<tr><td>FX</td><td><span data-l="en">one effect (again: next; held + white 1–12: that one; held long: off/on, its MIX kept). FX FULL: the CPU budget</span><span data-l="pt">um efeito (de novo: próximo; seguro + branca 1–12: aquele; segurada longa: desliga/liga, o MIX guardado). FX FULL: o orçamento de CPU</span></td></tr>
-<tr><td>DELAY</td><td>TIME FEEDBACK TONE MIX</td></tr>
+<tr><td>FX</td><td><span data-l="en">one effect (again: the next in the chain). FX FULL: the CPU budget</span><span data-l="pt">um efeito (de novo: o próximo na cadeia). FX FULL: o orçamento de CPU</span></td></tr>
+<tr><td>FILTER</td><td>FREQ (LP &lt; OPEN &gt; HP) RES DRIVE MIX</td></tr>
 <tr><td>REVERB</td><td>SIZE DAMP WIDTH MIX</td></tr>
 <tr><td>MOD</td><td>LFO 1 · LFO 2 · RANDOM · SMOOTH</td></tr>
 </table></section>
@@ -59,20 +59,22 @@
 <section><h2><span data-l="en">THE CHAIN, IN ORDER · THE 4TH KNOB IS MIX</span><span data-l="pt">A CADEIA, EM ORDEM · O 4º KNOB É O MIX</span></h2><table>
 <tr><td>1 FUZZ</td><td>GAIN TONE BIAS</td></tr>
 <tr><td>2 BLAST</td><td>GAIN TONE EMPHASIS</td></tr>
-<tr><td>3 FOLD</td><td>DEPTH BIAS SOFT</td></tr>
-<tr><td>4 WRAP</td><td>DEPTH BIAS SMOOTH</td></tr>
-<tr><td>5 RECTIFY</td><td>HALF BIAS TONE</td></tr>
-<tr><td>6 DIVIDE</td><td>OCTAVE WIDTH TONE</td></tr>
-<tr><td>7 RING</td><td>CARRIER FREQ DC</td></tr>
-<tr><td>8 STARVE</td><td>SAG GATE RECOVER</td></tr>
+<tr><td>3 STARVE</td><td>SAG GATE RECOVER</td></tr>
+<tr><td>4 FOLD</td><td>DEPTH BIAS SOFT</td></tr>
+<tr><td>5 WRAP</td><td>DEPTH BIAS SMOOTH</td></tr>
+<tr><td>6 RECTIFY</td><td>HALF BIAS TONE</td></tr>
+<tr><td>7 DIVIDE</td><td>OCTAVE WIDTH TONE</td></tr>
+<tr><td>8 RING</td><td>CARRIER FREQ DC</td></tr>
 <tr><td>9 SHIFT</td><td>HZ SPREAD FEEDBACK</td></tr>
 <tr><td>10 ECHO</td><td>TIME FEEDBACK WOW</td></tr>
-<tr><td>11 PUMP</td><td>DEPTH ATTACK RELEASE</td></tr>
-<tr><td>12 SWEEP</td><td>RANGE BASE RESO</td></tr>
+<tr><td>11 SWEEP</td><td>RANGE BASE RESO</td></tr>
+<tr><td>12 PUMP</td><td>DEPTH ATTACK RELEASE</td></tr>
 </table></section>
 
 <section><h2><span data-l="en">HOLD</span><span data-l="pt">SEGURAR</span></h2><table>
-<tr><td>STORE</td><td><span data-l="en">+ white 1–16: keep · tap: SETUP</span><span data-l="pt">+ branca 1–16: guardar · toque: SETUP</span></td></tr>
+<tr><td>EDIT</td><td><span data-l="en">tap: BASE · held 1 s: DICE · + FX: dice the effects · + an effect's key: dice its knobs</span><span data-l="pt">toque: BASE · seguro 1 s: DICE · + FX: dado nos efeitos · + tecla de um efeito: dado nos knobs dele</span></td></tr>
+<tr><td>REC</td><td><span data-l="en">tap: UNDO (8 back) · held 1 s: SETUP</span><span data-l="pt">toque: UNDO (8 para trás) · seguro 1 s: SETUP</span></td></tr>
+<tr><td>FX</td><td><span data-l="en">+ white 1–12: step that effect's stage (orthodox, heterodox, heretic)</span><span data-l="pt">+ branca 1–12: avança o estágio do efeito (ortodoxo, heterodoxo, herege)</span></td></tr>
 <tr><td>RIBBON</td><td><span data-l="en">the keys set the last knob touched</span><span data-l="pt">as teclas ajustam o último knob mexido</span></td></tr>
 <tr><td>LFO</td><td><span data-l="en">+ turn: depth · + white 1–4: source · 2 taps: clear</span><span data-l="pt">+ girar: profundidade · + branca 1–4: fonte · 2 toques: limpa</span></td></tr>
 <tr><td>MOTION</td><td><span data-l="en">record knob gestures (≤ 8 s) · tap: clear</span><span data-l="pt">grava gestos dos knobs (≤ 8 s) · toque: limpa</span></td></tr>
@@ -80,13 +82,15 @@
 </table></section>
 
 <section><h2>PADS</h2><table>
-<tr><td><span data-l="en">WHITE</span><span data-l="pt">BRANCOS</span></td><td><span data-l="en">the 16 memories: tap = recall, hold = MORPH toward it (let go: it stays)</span><span data-l="pt">as 16 memórias: toque = chamar, segurar = MORPH até ela (soltou: fica)</span></td></tr>
-<tr><td><span data-l="en">BLACK</span><span data-l="pt">PRETOS</span></td><td>N1 N2 N3 N4 ALL <span data-l="en">(strikes; held: the return open)</span><span data-l="pt">(golpes; seguro: o retorno aberto)</span> · CUT · CHOP · SCATTER <span data-l="en">(held + K1: rate)</span><span data-l="pt">(seguro + K1: velocidade)</span> · RETURN · OPEN · VIEW</td></tr>
+<tr><td><span data-l="en">WHITE 1–12</span><span data-l="pt">BRANCOS 1–12</span></td><td><span data-l="en">the effects in the chain's order: tap = in/out (MIX kept), hold = its page</span><span data-l="pt">os efeitos na ordem da cadeia: toque = liga/desliga (MIX guardado), segurar = a página dele</span></td></tr>
+<tr><td><span data-l="en">WHITE 13–16</span><span data-l="pt">BRANCOS 13–16</span></td><td><span data-l="en">starting points LOW HIGH HARSH BEATING (the network only; no presets: the sound is kept by itself)</span><span data-l="pt">pontos de partida LOW HIGH HARSH BEATING (só a rede; sem presets: o som fica guardado sozinho)</span></td></tr>
+<tr><td><span data-l="en">BLACK</span><span data-l="pt">PRETOS</span></td><td>N1 N2 N3 N4 ALL <span data-l="en">(strikes; held: the return open)</span><span data-l="pt">(golpes; seguro: o retorno aberto)</span> · CUT · SURGE <span data-l="en">(held: GAIN past the edge; tap: IGNITE)</span><span data-l="pt">(seguro: GAIN além da borda; toque: IGNITE)</span> · SHUFFLE <span data-l="en">(held: the matrix scrambled; + EDIT keeps it)</span><span data-l="pt">(seguro: a matriz embaralhada; + EDIT guarda)</span> <span data-l="en">(+ K1: how much; + a NODE: that loop)</span><span data-l="pt">(+ K1: quanto; + um NODE: aquele laço)</span> · RETURN · OPEN · VIEW</td></tr>
+<tr><td><span data-l="en">LIGHTS</span><span data-l="pt">LUZES</span></td><td><span data-l="en">dim: the key does something · on: chosen, in or acting · blinking: left out by the CPU</span><span data-l="pt">meia-luz: a tecla faz algo · acesa: escolhida, ligada ou agindo · piscando: deixado de fora pela CPU</span></td></tr>
 </table></section>
 
 <section><h2>MIDI</h2><table>
 <tr><td>NOTE 53–79</td><td><span data-l="en">pads</span><span data-l="pt">pads</span></td></tr>
-<tr><td>NOTE 36–49</td><td>MOTION RIBBON LOOP CHAN MATRIX SHAPE EDIT LFO FX DELAY REVERB MOD DRONE STORE</td></tr>
+<tr><td>NOTE 36–49</td><td>MOTION RIBBON LOOP CHAN MATRIX SHAPE EDIT LFO FX FILTER REVERB MOD DRONE REC</td></tr>
 <tr><td>CC 20–23</td><td>K1–K4</td></tr>
 <tr><td>CC 24 25 26</td><td>CROSS SCREAM GAIN</td></tr>
 <tr><td>CC 7</td><td>LEVEL</td></tr>
@@ -95,9 +99,9 @@
 <section><h2><span data-l="en">ON THE UNIT</span><span data-l="pt">NO APARELHO</span></h2><table>
 <tr><td>SELECT ALGORITHM PRESETS</td><td>CROSS SCREAM GAIN</td></tr>
 <tr><td>FX SCL ENV LFO</td><td>LOOP CHAN MATRIX SHAPE</td></tr>
-<tr><td>HOME SAVE ARP SEQ</td><td>FX DELAY REVERB MOD</td></tr>
-<tr><td>OCT− OCT+ EDIT GLO</td><td>MOTION RIBBON (EDIT: FREE) LFO</td></tr>
-<tr><td>PLAY REC</td><td>DRONE STORE</td></tr>
+<tr><td>HOME SAVE ARP SEQ</td><td>FX FILTER REVERB MOD</td></tr>
+<tr><td>OCT− OCT+ EDIT GLO</td><td>MOTION RIBBON EDIT LFO</td></tr>
+<tr><td>PLAY REC</td><td>DRONE REC</td></tr>
 </table></section>
 </div>
 <p class="note"><span data-l="en">FM-1 is a trademark of its manufacturer. FAÍSCA (GPL-3.0) is not affiliated with it or endorsed by it.</span><span data-l="pt">FM-1 é marca do seu fabricante. O FAÍSCA (GPL-3.0) não é afiliado a ele nem endossado por ele.</span></p>

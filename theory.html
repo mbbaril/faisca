@@ -168,7 +168,10 @@ glissandi of frequency-shifted feedback. SPREAD sets each loop a little apart; F
 the shifter.</p>
 <h3>Time: ECHO</h3>
 <p>ECHO is a short delay, 2 to 27 ms, inside each loop, with its own feedback, a slightly different time in each loop,
-and a slow modulation (WOW). It adds a second comb inside the first, whose teeth beat against the loop's own period.</p>
+and a slow modulation (WOW). It adds a second comb inside the first, whose teeth beat against the loop's own period. It
+behaves as a bucket brigade of 1024 stages: its time glides as the brigade's clock would (about 80 ms), so turning
+TIME bends the repeats' pitch instead of jumping; its passband follows the clock (about 0.18 × stages / time: 6.8 kHz
+at 27 ms, darker as it lengthens); each pass is softly saturated and carries the compander's faint hiss.</p>
 <h3>Dynamics: PUMP</h3>
 <p>PUMP is a feed-forward compressor inside the loop (Giannoulis, Massberg and Reiss give the general design): its
 envelope follows the level with ATTACK and RELEASE, and the gain falls as the level rises. In a loop above unity this
@@ -179,10 +182,11 @@ RELEASE.</p>
 whose centre is moved up from BASE by the loop's own envelope, with RANGE setting how far. It is an envelope filter,
 and in a loop it closes a third feedback path: the louder the loop, the higher the band, which changes what returns.</p>
 
-<h2><small>06</small>After the network: DELAY and REVERB</h2>
-<p>Loops 1 and 3 are summed to the left, 2 and 4 to the right, and pass through the output gate. DELAY is a ping-pong
-delay of 10 to 120 ms: each side's repeats are fed into the other through a low-pass (TONE), so the echoes alternate
-and darken. REVERB is a feedback delay network of four lines (601, 743, 919 and 1097 samples, mutually prime so their
+<h2><small>06</small>After the network: FILTER and REVERB</h2>
+<p>Loops 1 and 3 are summed to the left, 2 and 4 to the right, and pass through the output gate. FILTER is a two-pole
+state-variable filter (the topology-preserving transform), low-pass left of FREQ's centre and high-pass right
+of it, the centre a dead zone where the sound passes untouched; its band state saturates inside the loop, so a high
+RES rounds into a singing peak instead of running away, and DRIVE pushes the input into a soft clip first. REVERB is a feedback delay network of four lines (601, 743, 919 and 1097 samples, mutually prime so their
 echoes do not coincide), mixed by a 4 × 4 Hadamard matrix, which is orthogonal and therefore lossless, with a gain
 below one (SIZE) and a low-pass in each line (DAMP), as in Jot and Chaigne and in Schroeder's first designs. WIDTH
 spreads the outputs between the two sides. Because both come after the gate, a CUT leaves their tails ringing.</p>
@@ -349,7 +353,10 @@ local, em volta do deslocador.</p>
 <h3>Tempo: ECHO</h3>
 <p>O ECHO é um atraso curto, de 2 a 27 ms, dentro de cada laço, com realimentação própria, um tempo um pouco diferente
 em cada laço e uma modulação lenta (WOW). Ele acrescenta um segundo pente dentro do primeiro, cujos dentes batem contra
-o período do próprio laço.</p>
+o período do próprio laço. Ele se comporta como um bucket brigade de 1024 estágios: o tempo desliza como o relógio
+da brigada deslizaria (cerca de 80 ms), então girar o TIME curva a altura das repetições em vez de saltar; a banda
+passante segue o relógio (cerca de 0,18 × estágios / tempo: 6,8 kHz a 27 ms, mais escura quanto mais longo); cada
+passagem satura suavemente e leva o chiado leve do compander.</p>
 <h3>Dinâmica: PUMP</h3>
 <p>O PUMP é um compressor por antecipação dentro do laço (Giannoulis, Massberg e Reiss dão o desenho geral): o envelope
 segue o nível com ATTACK e RELEASE, e o ganho cai conforme o nível sobe. Num laço acima da unidade, ele briga com o
@@ -361,9 +368,12 @@ Zavalishin) cujo centro sobe a partir do BASE pelo envelope do próprio laço, c
 envelope e, no laço, fecha um terceiro caminho de realimentação: quanto mais alto o laço, mais aguda a banda, o que
 muda o que volta.</p>
 
-<h2><small>06</small>Depois da rede: DELAY e REVERB</h2>
-<p>Os laços 1 e 3 somam à esquerda, 2 e 4 à direita, e passam pelo portão de saída. O DELAY é um pingue-pongue de 10 a
-120 ms: as repetições de cada lado entram no outro por um passa-baixa (TONE), então os ecos alternam e escurecem. O
+<h2><small>06</small>Depois da rede: FILTER e REVERB</h2>
+<p>Os laços 1 e 3 somam à esquerda, 2 e 4 à direita, e passam pelo portão de saída. O FILTER é um filtro de estado
+variável de dois polos (a transformação que preserva a topologia), passa-baixas à esquerda do centro do
+FREQ e passa-altas à direita, o centro uma zona morta em que o som passa intacto; seu estado de banda satura dentro do
+laço, então um RES alto arredonda num pico que canta em vez de disparar, e o DRIVE empurra a entrada num clip suave
+antes. O
 REVERB é uma rede de atrasos realimentada de quatro linhas (601, 743, 919 e 1097 amostras, primos entre si para que os
 ecos não coincidam), misturadas por uma matriz de Hadamard 4 × 4, que é ortogonal e portanto sem perdas, com um ganho
 abaixo de um (SIZE) e um passa-baixa em cada linha (DAMP), como em Jot e Chaigne e nos primeiros desenhos de Schroeder.

@@ -87,7 +87,7 @@
     <li><span>LOOP DELAY · PITCH SCREAM</span></li>
   </ol>
   <ol class="chain" aria-label="After the network">
-    <li class="ext"><span>LOOPS 1+3 LEFT · 2+4 RIGHT</span></li><li><span>GATE</span></li><li><span>DELAY</span></li><li><span>REVERB</span></li><li><span>LEVEL</span></li><li><span>LIMITER</span></li>
+    <li class="ext"><span>LOOPS 1+3 LEFT · 2+4 RIGHT</span></li><li><span>GATE</span></li><li><span>FILTER</span></li><li><span>REVERB</span></li><li><span>LEVEL</span></li><li><span>LIMITER</span></li>
   </ol>
   <div class="two">
     <div class="prose"><p>The loops are tuned to partials of MID, from 20 Hz to 10 kHz. GAIN sets how much each loop
@@ -109,7 +109,7 @@
       <tr><td>ECHO</td><td class="m">TIME FEEDBACK WOW</td><td>A short echo inside each loop, 2 to 27 ms.</td></tr>
       <tr><td>PUMP</td><td class="m">DEPTH ATTACK RELEASE</td><td>A compressor inside the loop: it ducks, then swells.</td></tr>
       <tr><td>SWEEP</td><td class="m">RANGE BASE RESO</td><td>A resonant band-pass moved by the loop's own level.</td></tr>
-      <tr><td>DELAY</td><td class="m">TIME FEEDBACK TONE</td><td>After the network: ping-pong, 10 to 120 ms.</td></tr>
+      <tr><td>FILTER</td><td class="m">FREQ RES DRIVE</td><td>After the network: low-pass left of centre, high-pass right, untouched at the centre.</td></tr>
       <tr><td>REVERB</td><td class="m">SIZE DAMP WIDTH</td><td>After the network: a small, bright four-line network.</td></tr>
     </tbody></table></div>
   </div>
@@ -121,7 +121,7 @@
     has the map of every control.</p></div>
   <ol class="rules">
     <li><span class="num">01</span><b>Three knobs never change</b>CROSS, SCREAM and GAIN, and LEVEL on the pot.</li>
-    <li><span class="num">02</span><b>One button, one section</b>K1 to K4 play the lit section: LOOP, CHAN, MATRIX, SHAPE, FX, DELAY, REVERB, MOD. CHAN, MATRIX and FX step on when pressed again.</li>
+    <li><span class="num">02</span><b>One button, one section</b>K1 to K4 play the lit section: LOOP, CHAN, MATRIX, SHAPE, FX, FILTER, REVERB, MOD. CHAN, MATRIX and FX step on when pressed again.</li>
     <li><span class="num">03</span><b>Holding is a layer</b>MEMORY and STORE: the sixteen sounds on the white keys. FX: the twelve effects. LFO: the sources, and a turned knob gets a depth. RIBBON: the keys become positions.</li>
     <li><span class="num">04</span><b>The fourth knob is MIX</b>In every effect. At zero the effect is not in the path.</li>
     <li><span class="num">05</span><b>The screen says what you touched</b>Name and value, large, for a moment; then the four lamps.</li>
@@ -135,7 +135,7 @@
   <div class="two">
     <div class="table-scroll"><table class="data"><thead><tr><th>Message</th><th>Control</th></tr></thead><tbody>
       <tr><td>NOTE 53–79</td><td>The 27 pads, F3 to G5 (C4 = 60)</td></tr>
-      <tr><td>NOTE 36–49</td><td>The 14 buttons: MOTION, RIBBON, LOOP, CHAN, MATRIX, SHAPE, MEMORY, LFO, FX, DELAY, REVERB, MOD, DRONE, STORE</td></tr>
+      <tr><td>NOTE 36–49</td><td>The 14 buttons: MOTION, RIBBON, LOOP, CHAN, MATRIX, SHAPE, MEMORY, LFO, FX, FILTER, REVERB, MOD, DRONE, STORE</td></tr>
       <tr><td>CC 20–23</td><td>K1–K4, the section in use (absolute)</td></tr>
       <tr><td>CC 24 · 25 · 26</td><td>CROSS · SCREAM · GAIN</td></tr>
       <tr><td>CC 7</td><td>LEVEL, until the pot is moved</td></tr>
@@ -220,7 +220,7 @@
     <li><span>ATRASO DO LAÇO · PITCH SCREAM</span></li>
   </ol>
   <ol class="chain" aria-label="Depois da rede">
-    <li class="ext"><span>LAÇOS 1+3 ESQUERDA · 2+4 DIREITA</span></li><li><span>GATE</span></li><li><span>DELAY</span></li><li><span>REVERB</span></li><li><span>LEVEL</span></li><li><span>LIMITADOR</span></li>
+    <li class="ext"><span>LAÇOS 1+3 ESQUERDA · 2+4 DIREITA</span></li><li><span>GATE</span></li><li><span>FILTER</span></li><li><span>REVERB</span></li><li><span>LEVEL</span></li><li><span>LIMITADOR</span></li>
   </ol>
   <div class="two">
     <div class="prose"><p>Os laços se afinam em parciais do MID, de 20 Hz a 10 kHz. GAIN define quanto cada laço
@@ -242,7 +242,7 @@
       <tr><td>ECHO</td><td class="m">TIME FEEDBACK WOW</td><td>Um eco curto dentro de cada laço, de 2 a 27 ms.</td></tr>
       <tr><td>PUMP</td><td class="m">DEPTH ATTACK RELEASE</td><td>Um compressor dentro do laço: abaixa e volta a crescer.</td></tr>
       <tr><td>SWEEP</td><td class="m">RANGE BASE RESO</td><td>Um passa-banda ressonante movido pelo nível do laço.</td></tr>
-      <tr><td>DELAY</td><td class="m">TIME FEEDBACK TONE</td><td>Depois da rede: pingue-pongue, de 10 a 120 ms.</td></tr>
+      <tr><td>FILTER</td><td class="m">FREQ RES DRIVE</td><td>Depois da rede: passa-baixas à esquerda do centro, passa-altas à direita, intacto no centro.</td></tr>
       <tr><td>REVERB</td><td class="m">SIZE DAMP WIDTH</td><td>Depois da rede: uma pequena rede clara de quatro linhas.</td></tr>
     </tbody></table></div>
   </div>
@@ -254,7 +254,7 @@
     tem o mapa de cada controle.</p></div>
   <ol class="rules">
     <li><span class="num">01</span><b>Três knobs nunca mudam</b>CROSS, SCREAM e GAIN, mais o LEVEL no potenciômetro.</li>
-    <li><span class="num">02</span><b>Um botão, uma seção</b>K1 a K4 tocam a seção acesa: LOOP, CHAN, MATRIX, SHAPE, FX, DELAY, REVERB, MOD. CHAN, MATRIX e FX avançam quando apertados de novo.</li>
+    <li><span class="num">02</span><b>Um botão, uma seção</b>K1 a K4 tocam a seção acesa: LOOP, CHAN, MATRIX, SHAPE, FX, FILTER, REVERB, MOD. CHAN, MATRIX e FX avançam quando apertados de novo.</li>
     <li><span class="num">03</span><b>Segurar é uma camada</b>MEMORY e STORE: os dezesseis sons nas teclas brancas. FX: os doze efeitos. LFO: as fontes, e um knob girado ganha profundidade. RIBBON: as teclas viram posições.</li>
     <li><span class="num">04</span><b>O quarto knob é o MIX</b>Em todo efeito. No zero, o efeito não está no caminho.</li>
     <li><span class="num">05</span><b>A tela diz o que você tocou</b>Nome e valor, grandes, por um instante; depois as quatro lâmpadas.</li>
@@ -268,7 +268,7 @@
   <div class="two">
     <div class="table-scroll"><table class="data"><thead><tr><th>Mensagem</th><th>Controle</th></tr></thead><tbody>
       <tr><td>NOTA 53–79</td><td>Os 27 pads, de F3 a G5 (C4 = 60)</td></tr>
-      <tr><td>NOTA 36–49</td><td>Os 14 botões: MOTION, RIBBON, LOOP, CHAN, MATRIX, SHAPE, MEMORY, LFO, FX, DELAY, REVERB, MOD, DRONE, STORE</td></tr>
+      <tr><td>NOTA 36–49</td><td>Os 14 botões: MOTION, RIBBON, LOOP, CHAN, MATRIX, SHAPE, MEMORY, LFO, FX, FILTER, REVERB, MOD, DRONE, STORE</td></tr>
       <tr><td>CC 20–23</td><td>K1–K4, da seção em uso (absoluto)</td></tr>
       <tr><td>CC 24 · 25 · 26</td><td>CROSS · SCREAM · GAIN</td></tr>
       <tr><td>CC 7</td><td>LEVEL, até o potenciômetro ser mexido</td></tr>
